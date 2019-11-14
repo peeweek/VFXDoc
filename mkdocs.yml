@@ -1,0 +1,86 @@
+site_name: VFXDoc
+nav:
+    - Home : 'index.md'
+    - VFX:
+        - 'The Job': 'vfx/job.md'
+        - 'Authoring VFX' : 'vfx/authoringvfx.md'
+        - 'Dynamics and Motion': 'vfx/dynamics.md'
+        - 'Particle Systems': 'vfx/particlesystems.md'
+        - 'Effect Meshes': 'vfx/meshes.md'
+        - 'Mesh Animation': 'vfx/meshanimation.md'
+        - 'Shaders': 'vfx/shaders.md'
+        - 'Post-Process and Camera FX': 'vfx/postprocessing.md'
+        - 'Scripting' : 'vfx/scripting.md'
+        - 'Procedural Generation': 'vfx/procedural.md'
+        - 'Tools and Links': 'vfx/tools.md'
+        - 'Lexicon': 'vfx/lexicon.md'     
+    - Textures :
+        - 'Textures Overview' : 'textures/overview.md'
+        - 'Texture Formats': 'textures/formats.md'
+        - 'Flipbooks and Texture Sheets': 'textures/flipbooks.md'
+        - 'Sampling Textures': 'textures/sampling.md'
+    - Shaders :
+        - 'Shaders Longform': 'shaders/overview.md'
+        - 'Color in Shaders': 'shaders/color.md'
+        - 'Math for Artists': 'shaders/math.md'
+        - 'Particle Shaders' : 'shaders/particlefeatures.md'
+        - 'Utility Functions': 'shaders/utility.md'
+        - 'HLSL Example': 'shaders/hlsl.md'
+        - 'HLSL & GLSL reference': 'shaders/reference.md'
+    - Performance :
+        - 'Overview' : 'performance/overview.md'
+        - 'Profiling' : 'performance/profiling.md'
+        - 'Performance FAQ' : 'performance/faq.md'
+    - Production:
+        - 'Relationships with the Team' : 'job/relationships.md'
+        - 'Planning': 'job/planning.md'
+        - 'Pre-Production': 'job/preproduction.md'
+        - 'Production': 'job/production.md'
+    - Articles: 
+        - 'Home' : 'articles/home.md'
+        - 'Houdini' : 'articles/houdini.md'
+        - 'Flow Mapping' : 'articles/flowmaps.md'
+        - 'Random' : 'articles/random.md'
+
+
+# Configuration
+theme:
+  name: null
+  custom_dir: material
+
+  # 404 page
+  static_templates:
+    - 404.html
+
+  # Don't include MkDocs' JavaScript
+  include_search_page: false
+  search_index_only: true
+
+  # Default values, taken from mkdocs_theme.yml
+  language: en
+  feature:
+    tabs: true
+  palette:
+    primary: pink
+    accent: red
+  font:
+    text: Roboto
+    code: Roboto Mono
+  favicon: assets/images/favicon.png
+  logo:
+    icon: "\uE80C"
+
+# Customization
+extra:
+  social:
+    - type: globe
+      link: http://struct.cc
+    - type: github-alt
+      link: https://github.com/squidfunk
+    - type: twitter
+      link: https://twitter.com/squidfunk
+    - type: linkedin
+      link: https://linkedin.com/in/squidfunk
+
+# Extensions
+#
