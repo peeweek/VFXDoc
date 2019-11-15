@@ -34,7 +34,19 @@ They are used most often to simulate volumetric effects at a cheap cost by relyi
 
 ## Geometric Light Shafts
 
-Geometric Light shafts are pieces of geo
+Geometric Light shafts are pieces of geometry that simulate light shafts. They are a pretty cheap replacement to a global volumetric fog solution and can provide more artist-friendly tweaks. Still, this is a static solution which integration is pretty manual.
+
+<u>Light Shafts are mainly used for :</u>
+
+* Emphasize on the lighting direction and intensity on certain darkened areas, such as interiors, forests, ...
+* Animated Lightshafts can be used as radial explosion emphasis during the first frames in order to animate a bloom effect through a fog.
+
+<u>Geometric Light Shafts can be of different shapes:</u>
+
+* Planar Light Shafts are mainly used for backgrounds and fixed camera points of view.
+* Volume (Cone, Cylinder, Pyramid, Box) can be used directly on the critical path of the player by implementing more complex behavior.
+
+
 
 ## GlowSpheres / FogSpheres
 

@@ -1,6 +1,12 @@
+# About VFXDoc
+
 ### Who are you?
 
-My name is Thomas Iché, I do real-time VFX for a living since 2008 and I have worked on several projects: I Am Alive (Ubisoft), Remember Me (Capcom), Life is Strange (Square Enix) and I am currently working at Unity Technologies, making the Visual Effect Graph. I am concerned by my tools in order to make cool and optimized effects. To achieve that, I am willing to improve my knowledge, tools and workflow so nothing gets in the way of creativity.
+My name is [Thomas Iché](https://peeweek.net).
+
+I do real-time VFX for a living since 2008 and I have worked on several projects: I Am Alive (Ubisoft), Remember Me (Capcom), Life is Strange (Square Enix).
+
+I am currently working at Unity Technologies, making the Visual Effect Graph. I am concerned by my tools in order to make cool and optimized effects. To achieve that, I am willing to improve my knowledge, tools and workflow so nothing gets in the way of creativity.
 
 I can also write code and scripts.
 
@@ -30,6 +36,8 @@ In this case I'd be glad if you can drop me a word about this. And I would try t
 
 ### I'd like to contribute to your documentation
 
-I'd be glad to accept contributions but I am not currently in a state of handling content in a community manner. I am currently working at a reduced pace because of family duty so I try to be realistic about what I can do and what I cannot.
+This documentation source is hosted on [GItHub](https://github.com/peeweek/VFXDoc) as an open-source repository, licensed under [Creative Commons license (CC4-BY-NC-ND)](http://creativecommons.org/licenses/by-nc-nd/4.0/). 
 
-Still, If you have an interesting article on your blog, feel free to send me a link to it and I'd be glad to share it on a dedicated page.
+You can enter issues if you find something wrong or missing on the website. Please note that there is a ton of content not written yet that's already planned so don't enter issues for these as they are probably already covered.
+
+Regardless of that, If you have an interesting article on your blog, feel free to send me a link to it and I'd be glad to share a link to it.
