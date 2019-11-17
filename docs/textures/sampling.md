@@ -105,21 +105,46 @@ sRGB Sampling roughly applies the inverse function of the gamma correction in or
 
 For more information see [Color Correction](..\shaders\color.md) 
 
-#####  
+
 
 ### Sampling Coordinates
 
-In order to sample a texture using a sampler, a set of coordinates need to be provided.
+In order to sample a texture using a sampler, a set of coordinates need to be provided. 
 
 ##### UV Coordinates
 
+UV and UVW Coordinates are the artist-friendly name of the mesh texture coordinates, a set of values stored per-vertex that correlate a particular vertex in a 2D Texture Space. These coordinates are used for texture mapping.
+
+Texture Coordinates (UV) are stored in the mesh data for every vertex. Some software enable storing many different texture coordinates for the same geometry. Every set of coordinates is set in a different Texture Coordinate Channel.
+
 ##### World Coordinates
+
+Sometimes, placing many object in the world require these objects to have continuous mapping from one instance to another. In order to sample these coordinates, we do not require any Texture Coordinate Channel.
+
+<u>World coordinates can be used for :</u>
+
+* Tiling textures over great distances
+* Provide seamless continuity across objects
+* Add world-space detail and variation over objects
 
 ##### Screen-Space Coordinates
 
+Screen Space coordinates are a way to map textures in screen-space. These coordinates are aligned to the screen rectangle:
+
+* With the origin being in the top (or bottom) left corner, stretching up to 1 in every direction (horizontal and vertical)
+* With its origin being in the center of the screen, and coordinates stretching between -1 and 1 in every direction (horizontal and vertical)
+
 ##### Lookup Coordinates
 
+Lookup Coordinates is a custom way to sample a texture. Instead of using coordinates, we can use anything to sample a texture : time, exposed shader property, textures. 
+
+Using a texture value as a lookup coordinate enable performing Gradient Mapping : using this black and white value interpreted as coordinate (0 = black, 1= white), we can sample a texture (namely a Look-Up Texture or Look-Up Table) to remap the value. 
+
 ### Deforming Sampling Coordinates
+
+Deforming Sampling Coordinates enable performing distortion on textures. This concept assumes that you mix texture coordinates and values sampled from a texture as deforming weights.
+
+For instance adding the values sampled from a normal map to the texture coordinates will deform the coordinates based on the tilted angles. 
 
 ## Texture Sampling and Performance
 
