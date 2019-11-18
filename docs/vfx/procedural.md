@@ -8,11 +8,6 @@ Going procedural is a recent trend that leads us into a really complicated yet s
 
 ## Techniques
 
-Scattering
+### Geometric Scattering
 
-Offline Baking
-
-Full engine generation
-
-
-
+### Offline Simulation Baking

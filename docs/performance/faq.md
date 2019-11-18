@@ -1,7 +1,5 @@
 # Performance FAQ
 
-
-
 #### Which tool do I choose to profile?
 
 Depends on what you want to achieve, and how deep you need to extract information. Most of the time, you will need basic tools first to pinpoint a performance problem : your engine comes with many tools to display timing information, sort and filter these values so you can have a clearer view of what is happening.
@@ -23,4 +21,3 @@ Most of the time, while doing multithreading, the main goal is to have everythin
 That's too bad for you.
 
 ... More seriously, we can get away with a global understanding of the problem and which job overlapped with our precious millisecond budget. Most of the time, the CTO will come at the culprits and try to figure out with them a solution, but in the end we will be the ones to come at them to discuss things.
-

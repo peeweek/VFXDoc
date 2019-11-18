@@ -13,7 +13,6 @@ Visual Scripting has been popularized since 2007 and the Unreal Engine 3's visua
 ![](img/kismet_graph.jpg)
 
 <center>*Sample Kismet Graph (source: [UDN](https://docs.unrealengine.com/udk/Three/KismetUserGuide.html))*</center>
-
 This visual scripting was easy enough for people to start working in some simple scenes and prototype gameplay. Compared to this system, *UnrealScript*, the text-based counterpart was more powerful in terms of capabilities but another league to reach for users. Let alone C++ if your studio had access to engine source code, which unlocks full potential but closes the door at most of all tech artists.
 
 #### From Kismet to Blueprint : Node-Based Level design to Node-Based Game design
@@ -50,5 +49,12 @@ Python is a pretty young scripting language which stands out by its strict forma
 
 #### Javascript
 
+Javascript is a really old scripting Language that has evolved towards web and netowrk communication. However, there are some implementations in graphic software such as Adobe suite (Photoshop, Illustrator, ...) with often custom closed API.
+
 #### Lua
 
+Lua is a language that is commonly seen integrated in video game engines. It is easy to learn and integrate but it is quite slow to execute. Some software do provide a lua integration in order to perform batching.
+
+#### C# (C-Sharp)
+
+C# is a modern language developped by microsoft since around 2000 and that is influenced by C++ and Java. This language is pretty easy to learn, mainly due to good Code editors (IDEs) that enable good code discovery. In modern game engines, you will be able to script using this language. 

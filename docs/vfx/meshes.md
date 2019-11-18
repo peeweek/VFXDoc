@@ -6,8 +6,6 @@ Geometric data is part of every artist job and visual effects are also part of i
 
 Particle meshes are a great deal when it comes to make effect as they provide real volume compared to sprites, at the expense of being more expensive in some way, and less expensive in other ways. Knowing when to use particle meshes is critical when dealing with production. 
 
-
-
 ## Static Meshes
 
 #### Volumetric proxies
@@ -43,8 +41,6 @@ Fog curtains are meshes
 #### Light / Shadow quads
 
 #### Heat Planes
-
-
 
 ## Adding your touch to an existing mesh
 

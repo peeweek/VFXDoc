@@ -9,7 +9,6 @@ Particle systems are commonly used for physical effects, but tend to approximate
 ### Body Properties
 
 <video loop="true" autoplay="true" ><source  src="../img/ball-bounce.mp4" type='video/mp4' /></video>
-
 **Body :** an evolving body, that can be a simple particle or a more complex body (rigid body, collision primitive)
 
 **Velocity **: Velocity is the vector expression of the motion of a body, and is often described as distance travelled by a body in a lapse of time. Its vector definition makes it define a direction and a magnitude.
@@ -31,8 +30,6 @@ Angular velocity of a body, or its spin, is the self-rotation velocity of the ob
 **Density**
 
 **Viscosity**
-
-
 
 ### Forces
 
@@ -72,7 +69,7 @@ Some particle engines also call this feature Vortex, Particle offset with angula
 
 **Dampening :** the inverse of “Bounciness”, a factor of energy absorption when a body collides with another. In terms of physics the energy loss by dampening is based on the two bodies dampening coefficient.
 
-
+**Roughness** : a property of the colliding surfaces that defines its evenness (or non-evenness) . Rough surfaces tend to alter the collision response of a body bounding on it.
 
 ## Physical Concepts in VFX
 
@@ -85,7 +82,6 @@ Positions for particles define how they evolve spatially along time. As time in 
 Velocity Integration is the operation where we displace every particle by its speed, given a lapse of time. The general equation for this is :
 
 <center>`position += velocity * deltaTime;`</center>
-
 as the velocity is expressed in units per second, and deltaTime is a fraction of a second that represents the time between two frames, we need to displace particle given this fraction.
 
 #### Precision in integration
@@ -98,31 +94,13 @@ In the end, an effect played at a framerate of 10 images per second and an effec
 
 ### Forces, Velocity And Speed
 
-Forces are modifiers for the velocity. They apply to the particle additively every frame and modify it so the velocity can now be applied to the positions (integration
-
-)
+Forces are modifiers for the velocity. They apply to the particle additively every frame and modify it so the velocity can now be applied to the positions (integration)
 
 ### Rotation and Spin
 
-
-
 ### Color
 
-
-
 ### Forces
-
-
-
-Offsets
-
-
-
-Collision
-
-
-
-
 
 ## Physically-Based Particles
 
