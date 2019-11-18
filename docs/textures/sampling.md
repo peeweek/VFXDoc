@@ -1,6 +1,6 @@
 # Texture Sampling
 
-
+Texture sampling is the process of reading textures through the GPU. Graphics Hardware embeds a set of texture units that are able to read texture pixels directly or **sample** these textures using different algorithms.
 
 ## Sampling Options
 
@@ -146,9 +146,59 @@ Deforming Sampling Coordinates enable performing distortion on textures. This co
 
 For instance adding the values sampled from a normal map to the texture coordinates will deform the coordinates based on the tilted angles. 
 
-## Texture Sampling and Performance
+## Texture Sampling in Shaders
 
-### Texture Dependency
+Sampling a texture in shaders can be achieved using:
 
-### Texture Cache and Stalls
+* The direct access to the texture array of pixels : **texture load**
+* Access to filtering, mip-maps and other features through **texture samples**
+
+#### Samplers
+
+Very often, texture reads are made through a texture sampler that is bound to the texture. It is an object  created when the texture is imported, and bound automatically to the shader by the engine.
+
+Samplers hold a configuration for reading textures:
+
+* Adressing Mode (Clamp, Wrap, Mirror, ...) per axis
+* Filtering options (Filter Mode, Anisotropy)
+* sRGB/Linear
+
+### Texture.Load() instruction
+
+In HLSL a Texture.Load() is achieved by providing a reference to the texture and a `uint3` integer vector containing the following:
+
+* X,Y : pixel coordinates of the pixel
+* Z : mip level which we want to read from
+
+The prototype of a Texture Load is as follows
+
+`float4 t.Load(uint3 coord);`
+
+1. Texture Load is also compatible with Compute Shaders
+
+#### tex2D(), tex2Dlod(), tex2Dbias()
+
+In HLSL, these 3 functions will access a texture's data for a given coordinate, based on three different computations of mip-maps:
+
+* tex2d will determine the correct mip-map based on **rasterization** texel density
+* tex2dbias will determine the correct mip-map based on **rasterization** texel density and will apply a bias on it
+* tex2dlod will not determine automatically the mip-map but instead will use the one specified
+
+#### Determining correct Mip-Map
+
+tex2d and tex2dbias are functions that can only be called in **pixel shaders**, because of their need of knowledge of texel density. During rasterization, texture coordinates are interpolated from the values stored in vertices, and, depending on the size of the triangle on screen, and the uv space visible, a **UV derivative will be computed**.
+
+The UV Derivative is a per-pixel value that tells how much UV coordinate changes from one pixel to its neighbors. When applying this mapping using a texture, the hardware can tell the **texel per pixel ratio**. 
+
+While the ideal case would be 1 Texture Texel per Screen Pixel, it is rarely the case in 3d graphics, due to perspective and shapes in the space.  By computing the derivative, depending on how close to the camera is the part of geometry being rendered, the correct mip-map will be chosen.
+
+Failing to do so would imply to use a higher definition mip-map for the current pixel, and would lead into two major problems:
+
+![Texture Aliasing Comparison]()
+
+* **Texture Aliasing** : by having a texel/pixel density ratio greater than one, it means that one pixel of the screen is supposed to draw a part of a texture that is composed of more than one pixel, for example an area of 8 by 8 pixels. In this case, the texture sample will have to decide of one pixel out of these 64 to get, but this value will not be an average of the 8 by 8, and so it will lead into texture aliasing.
+
+* **Texture Cache Stall** : in addition to texture aliasing, a texture cache stall will happen for texel/pixel ratios greater than one. Short version of this issue is the GPU needs to put in cache more memory than it's able to, so it will do it several times, slowing down the execution of the shader. For more information, this performance pitfall is detailed more in the [Performance](..\performance\overview.md) section.
+
+  
 
