@@ -29,8 +29,6 @@ You can also perform performance analysis really early in production by learning
 
 (More of these are covered in the Performance Chapter at the end of this book.)
 
-#### 
-
 #### Production Loads
 
 Let’s take the following example : Your game requires to setup a process on all meshes of all levels to set up a geometric deconstruction effect. To do so, you will have to be clever and come up with a plan, not only for you but also for the other teams. The plan could involve the following :

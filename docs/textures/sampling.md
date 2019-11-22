@@ -91,7 +91,7 @@ Filtering modes can be set to **POINT** (No filtering), **LINEAR** (Smooth) and 
 
 When reading a texture, provided coordinates will help the GPU determine which mip to read depending on the texel/pixel ratio and the view angle. Mip-maps are selected automatically to be used using a `tex2D(s,t)` operation. 
 
-Tex2D is the auto-mip function that will read a texture using its sampler s and coordinates t. This function is meant to be used in pixel shader only as the rasterization will determine the UV coordinate screen space derivative (how much UV changes from one pixel to its neighbor).
+Tex2D is the auto-mip function that will read a texture using its sampler s and coordinates t. This function is meant to be used in pixel shader only as the rasterization will determine the UV coordinate screen space derivative (how much UV changes from one pixel to its neighbor). For more information, see the  [tex2d](#shader-sampling-instructions) section below.
 
 ##### Texture Array slice Index
 
@@ -151,15 +151,24 @@ Sampling a texture in shaders can be achieved using:
 - The direct access to the texture array of pixels : **texture load**
 - Access to filtering, mip-maps and other features through **texture samples**
 
-#### Sampler Options
+#### Declaring Textures and Samplers
+
+```c
+sampler2d sampler;  // declaring a sampler
+texture2d texture;  // declaring a texture
+```
+
+#### Sampler Declaration and Options
 
 Very often, texture reads are made through a texture sampler that is bound to the texture. It is an object  created when the texture is imported, and bound automatically to the shader by the engine.
 
 Samplers hold a configuration for reading textures:
 
-- Adressing Mode (Clamp, Wrap, Mirror, ...) per axis
+* Addressing Mode (Clamp, Wrap, Mirror, ...) per axis 
+
 - Filtering options (Filter Mode, Anisotropy)
 - sRGB/Linear
+- *Optionally* : a reference to its texture. Because it's optional, generic samplers can be created and use with various textures.
 
 #### Texture.Load() instruction
 
@@ -178,9 +187,11 @@ The prototype of a Texture Load is as follows
 
 In HLSL, these 3 functions will access a texture's data for a given coordinate, based on three different computations of mip-maps:
 
-- tex2d will determine the correct mip-map based on **rasterization** texel density
+- tex2d will determine the correct mip-map based on **rasterization** texel density.
 - tex2dbias will determine the correct mip-map based on **rasterization** texel density and will apply a bias on it
 - tex2dlod will not determine automatically the mip-map but instead will use the one specified
+
+> tex2d and tex2dbias can only be used in pixel shaders because of their needs of screen-space UV derivatives, which are computed during rasterization, see next section for more information.
 
 ### Determining correct Mip-Maps
 
@@ -192,9 +203,9 @@ While the ideal case would be 1 Texture Texel per Screen Pixel, it is rarely the
 
 Failing to do so would imply to use a higher definition mip-map for the current pixel, and would lead into two major problems:
 
-<video loop="true" autoplay="true" ><source  src="img/texturealiasing.mp4" type='video/mp4' /></video>
+<video loop="true" autoplay="true" ><source  src="../img/texturealiasing.mp4" type='video/mp4' /></video>
 
-- **Texture Aliasing** : by having a texel/pixel density ratio greater than one, it means that one pixel of the screen is supposed to draw a part of a texture that is composed of more than one pixel, for example an area of 8 by 8 pixels. In this case, the texture sample will have to decide of one pixel out of these 64 to get, but this value will not be an average of the 8 by 8, and so it will lead into texture aliasing.
+- **Texture Aliasing** : by having a Texel/pixel density ratio greater than one, it means that one pixel of the screen is supposed to draw a part of a texture that is composed of more than one pixel, for example an area of 8 by 8 pixels. In this case, the texture sample will have to decide of one pixel out of these 64 to get, but this value will not be an average of the 8 by 8, and so it will lead into texture aliasing.
 
 - **Texture Cache Stall** : in addition to texture aliasing, a texture cache stall will happen for texel/pixel ratios greater than one. Short version of this issue is the GPU needs to put in cache more memory than it's able to, so it will do it several times, slowing down the execution of the shader. For more information, this performance pitfall is detailed more in the [Performance](..\performance\overview.md) section.
 

@@ -30,11 +30,11 @@ Welcome to this documentation directory : It covers many subjects of the visual 
 
 [Textures Overview](textures/overview.md) - Overview Longform about common texturing concepts in VFX.
 
-[Texture Formats](textures\formats.md) - Workflow and Runtime texture formats
+[Texture Formats](textures/formats.md) - Workflow and Runtime texture formats
 
-[Flipbooks and Texture Sheets](textures\flipbooks.md)  - Texture Sheets concepts and Flipbook animation processes
+[Flipbooks and Texture Sheets](textures/flipbooks.md)  - Texture Sheets concepts and Flipbook animation processes
 
-[Sampling Textures](textures\sampling.md) - How to read textures in shaders
+[Sampling Textures](textures/sampling.md) - How to read textures in shaders.
 
 ## Shaders
 
