@@ -74,7 +74,5 @@ When designing a color texture, an artist will paint values and most software wi
 
 On an exaggerated manner we can take our earlier example with 5-bit precision gradient and display the repartition of all the tones either in linear or sRGB.
 
-
-
 In the sRGB Example, the step gap between darker value is narrower than for brighter values.
 
