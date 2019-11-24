@@ -48,6 +48,12 @@ Welcome to this documentation directory : It covers many subjects of the visual 
 
 [HLSL GLSL reference](shaders/reference.md) - Links and Cheat Sheets for shader authors.
 
+## Scripting
+
+ [Python TL;DR](scripting\pythoncheatsheet.md) - Introduction to Python
+
+ [Python Image Library](scripting\python-pil.md) - Introduction to Python Image Library
+
 ## Performance
 
 [Performance and Technical Overview](performance/overview.md) - Longform about how to worry about making things fast

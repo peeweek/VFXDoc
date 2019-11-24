@@ -28,6 +28,9 @@ nav:
         - 'HLSL Example': 'shaders/hlsl.md'
         - 'HLSL & GLSL reference': 'shaders/reference.md'
     - Performance :
+        - 'Python' : 'scripting/pythoncheatsheet.md'
+        - 'Python Image Library' : 'scripting/python-pil.md'
+    - Performance :
         - 'Overview' : 'performance/overview.md'
         - 'Profiling' : 'performance/profiling.md'
         - 'Performance FAQ' : 'performance/faq.md'
