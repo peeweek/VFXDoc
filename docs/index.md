@@ -50,7 +50,9 @@ Welcome to this documentation directory : It covers many subjects of the visual 
 
 ## Scripting
 
- [Python TL;DR](scripting\pythoncheatsheet.md) - Introduction to Python
+ [Introduction to Scripting](vfx\scripting.md) - Generalities about scripting
+
+ [Python](scripting\pythoncheatsheet.md) - Introduction to Python
 
  [Python Image Library](scripting\python-pil.md) - Introduction to Python Image Library
 

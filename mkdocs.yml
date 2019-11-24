@@ -10,7 +10,6 @@ nav:
         - 'Mesh Animation': 'vfx/meshanimation.md'
         - 'Shaders': 'vfx/shaders.md'
         - 'Post-Process and Camera FX': 'vfx/postprocessing.md'
-        - 'Scripting' : 'vfx/scripting.md'
         - 'Procedural Generation': 'vfx/procedural.md'
         - 'Tools and Links': 'vfx/tools.md'
         - 'Lexicon': 'vfx/lexicon.md'     
@@ -28,6 +27,7 @@ nav:
         - 'HLSL Example': 'shaders/hlsl.md'
         - 'HLSL & GLSL reference': 'shaders/reference.md'
     - Scripting :
+        - 'Scripting' : 'vfx/scripting.md'
         - 'Python' : 'scripting/pythoncheatsheet.md'
         - 'Python Image Library' : 'scripting/python-pil.md'
     - Performance :
