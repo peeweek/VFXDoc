@@ -1,6 +1,6 @@
-# Python Cheat Sheet
+# Introduction to Python
 
-This is a really condensed cheat sheet to get introduced into python. This assumes we use **python 3.x**
+This is a really condensed cheat sheet to get introduced into python. This assumes we use **python 3.x** (Python 2 reaches end-of-life)
 
 ## Basics
 
@@ -34,15 +34,17 @@ PIP is a package installer, it downloads and adds features to the current python
 
 ## Writing Python Scripts
 
-### Imports
+Python scripts are text files with the extension .py. They can be edited using any text editor but you can use advanced editors such as [Notepad++](https://notepad-plus-plus.org/), [Sublime Text](https://www.sublimetext.com/) or advanced IDEs such as [Visual Studio Code](https://code.visualstudio.com/) or [PyCharm](https://www.jetbrains.com/pycharm/). The latter have better features, code discovery and debug capabilities.
 
-Imports modules reside at the top of the script file.
+### Imports Section
 
-`import module` : imports all the module classes
+Imports modules reside at the beginning of the script file.
 
-`from module import SomeClass, SomeOtherClass`: imports only some of the module classes
+`import my-module` : imports all the module classes from the module `my-module`
 
-Many libraries exist in standard python installations, but more can be installed using **PIP**
+`from my-module import SomeClass, SomeOtherClass`: imports only some of the module classes from `my-module`
+
+Many libraries exist in standard python installations, but more can be installed using **PIP** (See later)
 
 ## Python Syntax
 
@@ -53,6 +55,23 @@ print("This is a statement")
 print("This is another statement")
 name = "foo"
 print("My name is {}".format(foo))
+```
+
+### Comments
+
+Single Line Comments start with a `#`
+
+Multi Line Comments start and end with a `"""`
+
+```python
+# Single Line Comment
+print("blah") # Comments can be after a statement
+# But not before a statement : print("blah")
+"""
+This is a multi-line comment
+and is pretty handy to avoid
+using too many # symbols
+"""
 ```
 
 ### Indentation
@@ -93,5 +112,28 @@ print(birth) 			# ERROR! birth does not exist here, as is was created in
 						# the getYear function scope
 ```
 
+### Functions
 
-### 
+Functions can be defined using the `def` keyword, followed by the function name, then all the function parameters between parenthesis.
+
+Calling a function is made by using the function name and passing its parameters between parenthesis. The types are not precised in the function prototype.
+
+Functions can return any value during its execution or `None` if the execution ends by falling out of the scope of the function
+
+```python
+def bestoftwo(a, b)
+    if a == b :
+        print("We are tied!")
+        return(a)
+    elif a > b :
+        print("A is the Best ({})".format(a))
+        return(a)
+    else :
+        print("B is the Best ({})".format(b))
+        return(b)
+
+best = bestoftwo(14,4)
+
+```
+
+

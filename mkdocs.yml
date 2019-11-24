@@ -27,7 +27,7 @@ nav:
         - 'Utility Functions': 'shaders/utility.md'
         - 'HLSL Example': 'shaders/hlsl.md'
         - 'HLSL & GLSL reference': 'shaders/reference.md'
-    - Performance :
+    - Scripting :
         - 'Python' : 'scripting/pythoncheatsheet.md'
         - 'Python Image Library' : 'scripting/python-pil.md'
     - Performance :
