@@ -1,8 +1,8 @@
-# Scripting Home
+# Scripting
 
 Scripting is part of the work of tech artists, it gathers a lot of tasks from processing data in large batches to making actual tools for artists. It involves the knowledge of a scripting (or programming) language, or the knowledge of a visual scripting language.
 
-##Scripting vs. Visual Scripting
+## Scripting vs. Visual Scripting
 
 Scripting is often considered a daunting task for most of us especially when it comes to learn scripting into a new tech art environment. Most engines nowadays provides script support in various flavors and are more or less accessible to artists.
 
@@ -45,16 +45,16 @@ On the contrary, open language implementations in software seems often clunky or
 
 #### Python
 
-Python is a pretty young scripting language which stands out by its strict formatting that encapsulates blocks into indented paragraphs
+Python is a pretty young scripting language which stands out by its strict formatting that encapsulates blocks into indented paragraphs. You can find an introduction to python on [this page](..\scripting\pythoncheatsheet.md).
 
-#### Javascript
+#### JavaScript
 
-Javascript is a really old scripting Language that has evolved towards web and netowrk communication. However, there are some implementations in graphic software such as Adobe suite (Photoshop, Illustrator, ...) with often custom closed API.
+JavaScript is a really old scripting Language that has evolved towards web and network communication. However, there are some implementations in graphic software such as Adobe suite (Photoshop, Illustrator, ...) with often custom closed API.
 
 #### Lua
 
-Lua is a language that is commonly seen integrated in video game engines. It is easy to learn and integrate but it is quite slow to execute. Some software do provide a lua integration in order to perform batching.
+Lua is a language that is commonly seen integrated in video game engines. It is easy to learn and integrate but it is quite slow to execute. Some software do provide a Lua integration in order to perform batching.
 
 #### C# (C-Sharp)
 
-C# is a modern language developped by microsoft since around 2000 and that is influenced by C++ and Java. This language is pretty easy to learn, mainly due to good Code editors (IDEs) that enable good code discovery. In modern game engines, you will be able to script using this language. 
+C# is a modern language developed by Microsoft since around 2000 and that is influenced by C++ and Java. This language is pretty easy to learn, mainly due to good Code editors (IDEs) that enable good code discovery. In modern game engines, you will be able to script using this language. 
