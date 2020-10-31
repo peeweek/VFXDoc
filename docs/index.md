@@ -42,6 +42,8 @@ Welcome to this documentation directory : It covers many subjects of the visual 
 
 [Color in Shaders](shaders/color.md) - Principles of color, precision, Gamma and Linear, HDR and tonemapping
 
+[Alpha Erosion](shaders/alpha-erosion.md) - Principles of Alpha Erosion
+
 [Math for Artists](shaders/math.md) - Which operations to use for color, effects and cool stuff.
 
 [Utility Functions](shaders/utility.md) - A set of common utility functions to reuse in your shaders.
