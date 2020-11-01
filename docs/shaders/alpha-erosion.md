@@ -47,7 +47,13 @@ In addition to the `step(threshold, alpha)` function exists a `smoothstep(min, m
 
 ![](img/erosion-smoothstep.gif)
 
-## Erosion Methods and Processes
+## Authoring and Importing Erosion Maps
+
+Erosion maps are textures that convey a mathematical progress of alpha erosion. As such, they do not behave like color, and need to be imported as linear (sRGB off). Failing to do so can result in a non-linear progression of the mask, as shown as below.
+
+
+
+## Advanced Erosion Processes
 
 ### Dithered Erosion
 
@@ -59,13 +65,13 @@ In the following example, the Dither Node modifies the input gradient (in the 0.
 
 
 
-**Use Case :** The result of such erosion using a step function is rendered as pseudo-transparency that can be used on  Alpha-Clipped opaque rendered objects to simulate transparency. In such cases, the opaque pixels are more used.
+**Use Case :** The result of such erosion using a step function is rendered as pseudo-transparency that can be used on  Alpha-Clipped opaque rendered objects to simulate transparency. In such cases, every opaque pixels is used as an occluder and will prevent overdraw from happening. In the example below (Strike Vector EX), Oil tanks can be destroyed and the camera go through it, causing huge frame drops during the traversal of the smoke. At the beginning, the huge explosion are rendered as fully opaque spheres (that can still dither while going through, by using [camera fading](fading.md#camera-fading))
 
 <video loop="true" autoplay="true" ><source  src="../img/erosion-dithering-svex.mp4" type='video/mp4' /></video>
 
 ### Correct Threshold for Soft Erosion
 
-### Erosion Maps
+### 
 
 ### Progression Maps
 
