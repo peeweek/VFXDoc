@@ -1,16 +1,20 @@
 # Shaders Overview
 
-In this section, we will cover the theory behind rendering a 3d object using shaders in our favorite engine. Most of the time this is what happens, some times your engine will have more optimized ways to render your objects, but this is the common case that is covered here.
+In this section, we will cover the theory behind rendering a 3d object using Shaders in our game engine. This article is not specific to any game engine, some times it will have more optimized ways to render your objects, but this is the common case that is covered here.
 
+![](img/banner-gpu.jpg)
 
+**This article is mostly intended for curious technical artists,** as it covers some of the underlying mechanics happening when using shaders.
 
 ## What is a Shader?
 
 Shaders are **small programs designed to be run on a GPU** (Graphics Card), since these pieces of hardware are extremely fast, these programs are small, with really simple instructions, and are targeted to be **executed in parallel** for large amounts of elements.
 
-These elements are most of the time, geometry vertices, and pixels needed to be drawn on screen.
+These elements are most of the time, geometry vertices, and pixels needed to be drawn on screen. But some shaders, called compute shaders, are more generic and can be executed to compute raw data that is not meant to be displayed directly.
 
-There are many types of shaders depending on what you want to achieve: 
+## Different Types of shaders
+
+<u>There are many types of shaders depending on what you want to achieve:</u> 
 
 | Type                    | For each        | Description                              |
 | ----------------------- | --------------- | ---------------------------------------- |
@@ -24,31 +28,66 @@ There are many types of shaders depending on what you want to achieve:
 >
 > (2) Compute shaders are executed with arbitrary count defined by the user.
 
-## What is actually happening?
+## How shaders are executed by the GPU
+
+Shaders are invoked by the program running on the CPU, and are sent to the GPU to be executed. The main difference between a CPU and a GPU is that the **GPU is designed to execute dozens of small operations in parallel** and can be quite similar to dozens of small processors and each one is also split into different cores that will execute in parallel.
+
+> The number of Processors in a GPU and their core count have greatly changed along time and GPU Architectures, so the information below is only informational 
+
+#### Blocks, SMs, Small Processors
+
+The diagram below shows an overview of the architecture of a RTX 2060, every green block being a small processor (namely SM, or Streaming Multiprocessor).
+
+![](img/nvidia-gpu-architecture.png)
+
+#### Cores in every Processor
+
+In each of these processors (SMs), are stored cores. Each of these cores are meant to handle operations of a given type (integer, floating point, etc.) Execution is then orchestrated by the processor, for a group of elements (pixels, vertices) depending on the type of computation.
+
+> Some graphics cards also integrate more specialized operations (tensor cores) or even totally different units, dedicated to Raytracing.
+
+The figure below shows the amount of cores available in the Nvidia RTX 2060 and the GTX 1660
+
+![](img/sm-rtx-gtx.jpg)
+
+#### Executing Shaders by *Element*
+
+When executing a shader, the computation is split *by element*. Every element can be the following:
+
+* One vertex, during vertex shader
+* One pixel drawn on screen, during pixel shader
+* A triangle, during geometry shader
+* An arbitrary element based on ID, during a compute shader
+
+However, as every processor is able to handle a fixed amount of elements at a time, **these are grouped when sent to the GPU**. The processor is then assigned to compute all these elements at a time (even if the group is not fully populated).
+
+
+
+## Shaders used for Rendering
 
 When we want to render an object, the engine passes by different steps in order to configure the rendering and display it onscreen or store it in one or multiple Render Target(s) to be used later.
 
-![img](img/ShaderPipelineSimple.png)
-
-This example renders a simple object for this, and describe all the stages before rendering this object, in the case where is neither **tesselation** nor **geometry shader**
+![img](img/ShaderPipelineSimple.png)This example renders a simple object for this, and describe all the stages before rendering this object, in the case where is neither **tessellation** nor **geometry shader**
 
 ### 1 - Draw Call (CPU)
 
-Let’s say we want to render an object, the engine has loaded the geometry, also has a currently rendering camera, and finally want a Shader to render the object (configured with textures).
+Let’s say we want to render an object, the game engine has **loaded the geometry**, also has a currently rendering **camera**, and finally want a **Shader** to render the object (configured with textures).
 
-#### Preparing the Render Target
+#### Optional: Preparing the Render Target
 
 Before starting rendering the object, the engine sets the Render Target where the object should be drawn. This render target can be a simple color buffer but can offer features such as Z-Buffer or stencil buffer.
 
+This operation is not happening for every object: it happens when a draw operation need to be rendered to another render target.
+
 #### Setting Shader and the Parameters
 
-First, the engine will issue a command to start render the object, for this, it will upload the shader code to the graphics card.
+First, the game engine will issue a command for your GPU to start render the object, for this, it will upload the shader code to the graphics card.
 
-We also have to configure the shader by setting all its common parameters (transformation matrices, textures & colors, etc.) these parameters are called **uniform parameters **because they will be applied uniformly on all the geometry.
+We also have to configure the shader by setting all its common parameters (transformation matrices, textures & colors, etc. ) these parameters are called **uniform parameters **because they will be applied uniformly on all the geometry.
 
 *On the contrary, the vertex attributes of the geometry will vary from one vertex to another*
 
-Uniform Parameters comes in two forms:
+<u>Uniform Parameters comes in two forms:</u>
 
 - Set by the engine
   - Transformation matrices
@@ -59,27 +98,31 @@ Uniform Parameters comes in two forms:
   - Colors
   - Other parameters
 
+> Why "Uniform" ? When working with **shaders**, there are values that can differ from a pixel to another (eg, the position on screen), and values that are set only once for all the shader. They have an **uniform** value for all pixels.
+
 #### Setting the Geometry
 
-Along with the shader, we also upload the model to the graphics card.
+Along with the shader, we also upload the 3D model to the graphics card.
 
-At this stage, the only geometry we know is the object as it was exported (as local space), not the object in the scene.
+At this stage, the only geometry we know is the object as it was exported (eg: as local space), not the object in the scene.
 
 The geometry contains a list of vertices and a layout to be rendered (Triangles, lines, points). For each vertex, there is a structure of attributes that defines the point (Position, Normal, Tangent, Vertex Color, UVs, UV2s,...) this structure varies from one mesh to another depending on what you authored.
 
-#### Configuring the Draw Call
+#### Configuring the Draw Call with Render States
 
-Before executing the shader on the geometry, we have to issue commands to configure the blend mode (if any), backface culling, depth testing, depth writing, etc… these configuration options are called **renderstates **and are common for the whole geometry (which means that you cannot apply backface culling for some triangles only for instance).
+Before executing the shader on the geometry, we have to issue commands to configure the blend mode (if any), backface culling, depth testing, depth writing, etc… these configuration options are called **Render States **and are common for the whole geometry (which means that you cannot apply Backface culling for some triangles only for instance).
+
+These Render States will have a significant impact during the **Rasterization** stage. As they will help determine which pixels need to be drawn.
 
 ### 2 - Vertex Shader (GPU)
 
-In the general case, a standard vertex shader will be executed to compute the position of the geometry according to the mesh position in the level’s world, according to the camera position in space, then project the geometry on 2D screen. This is done by using a **WorldViewProjection **matrix, that corresponds to all the transformations to be applied to one vertex:
+In the general case, a standard vertex shader will be executed to compute the position of the geometry according to the **mesh position in the level’s world**, according to the **camera position** in space, then **project the result on 2D screen**. This is done by using a *WorldViewProjection* matrix, that corresponds to all the transformations to be applied to one vertex:
 
 * in order to place it at the correct world position : **local to world** (with translation, rotation and scale), 
 * view it at a correct angle: **world to view**
 * and project it on 2D screen correct camera field of view, and pixel ratio : **view to projection**
 
-All these transformations are often stored into the **WorldViewProjection** matrix if no intermediate computation is required. But often engines provide intermediate matrices to pass from one space to another.
+All these transformations are often stored into the *WorldViewProjection* matrix if no intermediate computation is required. But often engines provide intermediate matrices to pass from one space to another.
 
 ![img/spaces.png](img/spaces.png)
 
@@ -91,25 +134,31 @@ At this time, all the data that needs to be calculated and transferred to the pi
 
 When all the vertices of the geometry have been processed by the vertex shader, the GPU enters the **rasterization **phase.
 
-At this time, the hardware will try to **determine all the pixels that will have to be drawn on screen**.
+At this time, the graphics card will try to **determine all the pixels that will have to be drawn on screen**, by removing un-necessary ones. This removal operation is called **culling**. 
 
-During this stage, the hardware can perform the following:
+<u>During this stage, the hardware can perform the following:</u>
 
-- Pixel culling for off-screen triangles
-- Back-face culling depending on how the draw call was configured. (Culling front faces, back faces or no culling at all)
-- Pixel culling based on a Z-Buffer to cull pixels based on depth.
+- **Pixel culling** for off-screen triangles
+- **Face culling** depending on how the draw call was configured. (Culling front faces, back faces or no culling at all)
+- **Pixel culling** based on a Z-Buffer to cull pixels based on depth.
 - If a stencil operation is set, it will be executed here too.
 - Write depths in Z-Buffer if configured in render states.
 
+> **Why Culling? Can't we do it already in the shader using an opacity mask ?**
+>
+> Culling during the rasterization is mostly efficient as it will reduce the actual number of pixels that will be executed   
+
 Also, at this time, the per-vertex values will become interpolated to be available per-pixel. (This is for instance this operation that computes the vertex color gradient interpolations).
 
-The rasterization is a fixed pass and is not programmable such as a vertex or pixel shader.
+The rasterization is a fixed pass and is not as programmable as a vertex or pixel shader.
 
 ### 4 - Pixel (fragment) shader
 
-In the end, for each pixel candidate (fragment) that has suceeded to the rasterization phase and is about to be drawn on screen, the pixel shader computes the final color that will have to be rendered. Based on the interpolated data recieved by the rasterizer, we can now read textures based on geometry uv’s, compute lighting based on interpolated vertex normals (or normalmaps), read vertex colors to modify the output, etc.
+When the rasterization phase is over, a pixel shader is run, for each pixel candidate (fragment) that has succeeded to the rasterization phase and is about to be drawn on screen.
 
-The output of a pixel shader is, most of the time, a color value. In some cases, one pixel shader can output multiplue values. This value (or these values) are output to the initially set **RenderTarget**
+The pixel shader computes the final value (often, a color) that will have to be rendered. Based on the interpolated data received by the rasterizer, we can now read textures based on geometry UVs, compute lighting based on interpolated vertex Normals (or Normal maps), read vertex colors to modify the output, etc.
+
+The output of a pixel shader is, most of the time, a color value. In some cases, one pixel shader can output multiple values. This value (or these values) are output to the initially set **RenderTarget**
 
 ## Transferring Attributes from one state to another.
 
