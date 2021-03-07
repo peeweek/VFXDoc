@@ -2,6 +2,18 @@
 
 This language is close to the C language, and uses a reduced instruction set dedicated to GPU computing. Depending on the engine you use, shaders file contents can vary but you will find here the common denonimator for writing hlsl.
 
+### Text vs. Graph
+
+Authoring shaders can take many forms in terms of tools, depending on the engine you are working with, but the two main ways to author them are : text-based (the old-fashioned way) and using a node-based shader editor (most useful for artists).
+
+These two methods have their pros and cons but the learning curve of text-based shader editing is way more daunting than a graphical approach, but instead gives a better understanding and more possibilities than a node-based graph.
+
+The main advantage of using a node-based shader editor lies in the preview and the experimental context it enables for the user. Most of the node-based shader tools that know success enable per-node preview and this is precisely where the power come from. Prototyping made easy. A single tree can be reused and modified, and all the intermediate steps update accordingly. This is a must to learn how shading works, because it's visual, and visual is the way artists understand more how stuff works.
+
+However, in production node-based tools have proven poor maintenance, especially if the shaders are the fruit of N iterations of trial and error. Refactoring and understanding a tentacular graph can become nearly impossible when in production.
+
+## How is structured HLSL?
+
 Let's start with a base template that displays a textured mesh with a tiling texture which color is multiplied by vertex colors:
 
 ```C
