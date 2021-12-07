@@ -1,4 +1,19 @@
-# Fading Alpha
+# Fading Workflows
+
+Fading is a concept in Visual Effects that enables artists to control the opacity of their effects (or part of them) based on various criterion. This page contains an overview of the techniques used
+
+## Particle Fading
+
+### Over Life Fading
+
+Over Life particle fading enables the control of the opacity of the entire particle based on its age (often expressed as *relative age* which is the percentage ratio of its life `age/lifetime`). Particle system software often enable users to define this value either by using curves or alpha gradients. It is then the responsibility of the particle system to sample these curves/gradients every frame, for each particle and set the alpha value.
+
+#### Special Case : Pre-Multiplied Alpha blend mode
+
+In the case of pre-multiplied alpha blend mode. The color and the alpha of the particle are not correlated anymore. In order to entirely fade the particle you will need to :
+
+* Fade the RGB channel to pure black to remove the additive part of the blending
+* Fade the Alpha channel to zero to remove the matte part of the blending
 
 ### Depth Fading (Soft Particles) 
 

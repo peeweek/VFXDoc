@@ -2,29 +2,105 @@
 
 Reading a texture in Shaders is just a matter of sending coordinates (UV) to display the texture at the correct place on our mesh, or particle.
 
-![](D:/git/VFXDoc/docs/shaders/img/uv-read.png)
+![](./img/uv-read.png)
 
 So if we want to display a texture, we will need **texture coordinates** to display them correctly. Most of the time, these coordinates comes from the mesh setup in our favorite DCC.
 
-![](D:/git/VFXDoc/docs/shaders/img/uv-tiling.png)
+![](./img/uv-tiling.png)
 
 ## Scrolling UVs
 
-Some thing that is pretty cool in shaders is you can modify these coordinates before reading the texture : one simple example is texture scrolling : after reading the UVs, we add an offset based on the current game time to apply a scrolling effect.
+A pretty handy use case of manipulating the UVs before reading the texture is that you can dynamically alter them. One simple use of this manipulation is texture scrolling : after reading the UVs, we add an offset based on the current game time to apply a scrolling effect.
 
-![](D:/git/VFXDoc/docs/shaders/img/uv-scroll.gif)
+![](./img/uv-scroll.gif)
+
+> **Why do you use subtract instead of Add?**
+>
+> It would be legitimate to think that adding an offset would move the texture in that direction, however, if you take as 1D example, the range [0.0 .. 1.0] with 1/s scroll speed, would become at 0.1s : [0.1 .. 1.1].  So you would read the texture, a bit more to the right. However here, what we want is not to move our eye to the right, but instead move the texture to the right. So we need to go the opposite direction.
+>
+> **Why do you use the fraction node?**
+>
+> There are two reasons we use a `frac(time*scrollDirection)` :
+>
+> 1) First: So you can preview the scrolling in the modified UVs, before it's used in the Sample Texture Node. No doing so would result in large values and in our case, the subtract node preview would appear full black (negative values). The fraction instruction has limited impact on the shader performance and can help solve issues in the second case.
+> 2) Some node-based shader editors (such as unreal) can detect that a part of the computation network can be computed at CPU. If such a thing is possible, this means that the `time*scroll` value sent to the shader will always be low, thus preventing UV precision errors when time becomes big. If your shadergraph too does not handle that, produced will produce precision errors with large time values.
+
+
 
 ## Texture Coordinate Deformation
 
-A more sophisticated effect involves adding the result of a deforming texture to the texture coordinates before reading the final texture. 
+A common, more sophisticated effect involves adding the result of a deforming texture to the texture coordinates before reading the final texture. It is called Texture Coordinate Deformation (or UV Deformation).
 
-(Screenshot and Gif)
+![GIF of Texture Coordinate Deformation result]()
+
+In order to implement such deformation, we need to understand a bit what we can do with our UVs. In the previous example, we added a function of time and a direction to subtract  to the pixels. So it was applied in a uniform manner to all pixels.
+
+Now, let's ask ourselves: What If I could apply a different offset, for each pixel? We would not have a continuous scrolling in one direction, but could have a scrolling that flows in **every** direction. 
+
+But we are not yet there. Let's put the infinite scrolling on hold, pause the time and look at this :
+
+![Screenshot of normal map deforming UVs]()
+
+In this example, My UVs have been subtracted by not a single, uniform value, but instead by the result of a distortion map (taken from a normal map). The values are then applied to the UVs, and these distorted UVs will sample the texture with more or less strength.
+
+![GIF showing the strength of the deformation]() 
+
+Finally, a common use case for deformation, is to scroll the deformation map, and apply it to the UVs. It will make the deformation animated. You can also scroll the UVs for both the Deformation Map and the Color map at different speeds to create some parallax effect.
+
+### Deformation Continued : Flow Mapping
+
+Now that we know how to perform UV deformation, let's go back at our question: *Can I scroll infinitely every pixel in any direction?*
+
+The simple answer is : Yes! .... but not so easy!
+
+If we go back to our previous example, when we apply the deformation intensity to the deformation map, the intensity acts as our initial "time", and the pixels of the texture act as our initial "direction".
+
+![GIF Showing time plugged for deformation]()
+
+Here, we used the time variable instead of a parameter, the deformation will start at zero, then grow infinitely.... and after a quick value, it becomes so stretched that it becomes unusable. But something that was interesting was the beginning of the movement, when it was *not so deformed*.
+
+Now, instead of running our time value between 0 and infinity, let's cycle it between -1 ad 1. To do so, we modulo the time by 2, creating cycles between 0 and 2, then we subtract 1 to change the range to [-1..1]
+
+![GIF Showing time cycled between -1 and 1]()
+
+Now, the deformation is way better, we get inverse deformation when time is at -1, no deformation at 0 then forward deformation at 1. But the problem is now that it **does not cycle**.
+
+#### Making it loop
+
+The flow mapping workflow involves a process where two sequences of deformation ranges [-1 .. 1] are blended and alternate so the gap in the cycle becomes hidden. To do so, we offset the time by half a period so when the first sequence is at -1 (or 1), the other is at 0. Then we lerp between the two sequences to hide the gap. 
+
+![TimelineFigure showing the two sequences]()
+
+When applied to our graph, it doubles the sampling of the color map (but not the deformation map), which makes it a bit more complex.
+
+![Screenshot of the graph]()
+
+In that graph, we have at the two the two sequences, cycled in the -1...1 range, but the second one is offset of 1s just before remapping. So the texture is sampled two times for each sequence.
+
+Also, we used a triangle wave function to interpolate between the two sequences, it has a period of two, so it alternates every second from A to B, then B to A. For convenience in the master graph, we used an utility node. Here are the contents of that function. 
+
+![Screenshot of the Triangle Wave function]()
+
+Finally, we get this infinite scrolling effect. And by adjusting the intensity of the flow, we can tweak how it affects the temporal tiling. In order to enlighten the alternating two sequences, the example on the right uses two different color maps.
+
+> **Can I tweak the speed of blending between the two sequences? The intensity of the flow?** 
+>
+> Absolutely! For simplicity convenience, this example was made in the -1...1 range. But the flow mapping can be tweaked in two ways:
+>
+> 1) By dividing input time value by the period you want to use to blend between the two sequences.
+> 2) By applying an intensity multiplier to the values you read from the deformation map.
+
+> **How to simplify this graph? ** 
+>
+> As flow mapping can be a bit complex to handle. It is often recommended to either do a HLSL custom node function or a sub-graph node to simplify the workflow.
+
+
 
 ## UV to Gradient Color Mapping
 
 Color mapping is the use of a grayscale texture as coordinates to read inside a gradient texture. Basically to a black to white gradient we correspond a more complex gradient.
 
-![](D:/git/VFXDoc/docs/shaders/img/gradient-map.gif)
+![](./img/gradient-map.gif)
 
 #### Authoring assets
 
