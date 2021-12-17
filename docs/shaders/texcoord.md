@@ -94,6 +94,32 @@ Finally, we get this infinite scrolling effect. And by adjusting the intensity o
 >
 > As flow mapping can be a bit complex to handle. It is often recommended to either do a HLSL custom node function or a sub-graph node to simplify the workflow.
 
+#### The shader Code
+
+If you want to implement flow mapping in a code fashion here's a HLSL code snippet that can help you.
+
+```c
+float4 SampleFlowMap(
+    	float2 uv,
+    	sampler2d colorMap, 
+    	sampler2d flowMap, 
+    	float cycleDuration, 
+    	float flowIntensity, c
+    	float time)
+{
+    time /= max(cycleDuration,0.01f);               // ensure no divide by zero
+    float2 t = float2(time, time-1) % 2.0 - 1.0;    // two sequence times
+    float2 d = tex2d(flowMap, uv).rg * 0.5 - 0.5;   // Assume flowmap unsigned-normalized
+    float2 uv1 = uv + (d * t.x * flowIntensity);
+    float2 uv2 = uv + (d * t.y * flowIntensity);
+    float4 c1 = tex2d(colorMap, uv1);
+    float4 c2 = tex2d(colorMap, uv2);
+    return lerp(c1,c2, 1.0-abs(t.x));
+}
+```
+
+
+
 
 
 ## UV to Gradient Color Mapping
