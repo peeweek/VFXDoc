@@ -1,14 +1,22 @@
 # Texture Coordinates
 
-Reading a texture in Shaders is just a matter of sending coordinates (UV) to display the texture at the correct place on our mesh, or particle.
+Reading a texture to display it in a Shader is called **Sampling** : It requires a texture to read, and **Texture Coordinates**, often called UVs to read them and position them at the correct position.
 
 ![](./img/uv-read.png)
 
-So if we want to display a texture, we will need **texture coordinates** to display them correctly. Most of the time, these coordinates comes from the mesh setup in our favorite DCC.
+These **texture coordinates** can be altered before reading the texture: for instance, in the example below, we apply a multiplier to the UVs to apply some tiling.
 
 ![](./img/uv-tiling.png)
 
-## Scrolling UVs
+
+
+During the **Sampling** of the Texture, a **Sampler State** is used to control how the texture read will behave. By default, most Game Engines will store these settings for each texture, but you can also override them in your shader editors. 
+
+For more details, see [Texture Sampling](../textures/sampling.md).
+
+![](img/uv-sampler-override.png)
+
+## Scrolling UVs (Panner)
 
 A pretty handy use case of manipulating the UVs before reading the texture is that you can dynamically alter them. One simple use of this manipulation is texture scrolling : after reading the UVs, we add an offset based on the current game time to apply a scrolling effect.
 
@@ -31,29 +39,41 @@ A pretty handy use case of manipulating the UVs before reading the texture is th
 
 A common, more sophisticated effect involves adding the result of a deforming texture to the texture coordinates before reading the final texture. It is called Texture Coordinate Deformation (or UV Deformation).
 
-![GIF of Texture Coordinate Deformation result]()
+![GIF of Texture Coordinate Deformation result](img/uv-deform-example.gif)
 
-In order to implement such deformation, we need to understand a bit what we can do with our UVs. In the previous example, we added a function of time and a direction to subtract  to the pixels. So it was applied in a uniform manner to all pixels.
+In order to implement such deformation, we need to understand a bit more what we can do with our UVs: In the previous example, we added a function of time and a direction to subtract to the pixels. So it was applied in a evenly to all pixels.
 
-Now, let's ask ourselves: What If I could apply a different offset, for each pixel? We would not have a continuous scrolling in one direction, but could have a scrolling that flows in **every** direction. 
+Now, let's ask ourselves: What If we could apply a different direction, for each pixel? We would not have a continuous scrolling in one direction, but could have a scrolling that flows in **many** directions. 
 
-But we are not yet there. Let's put the infinite scrolling on hold, pause the time and look at this :
+But we are not yet there. Let's put the infinite flow scrolling on hold, pause the time and look at this :
 
-![Screenshot of normal map deforming UVs]()
+![Screenshot of normal map deforming UVs](img/uv-distortion-map.png)
 
-In this example, My UVs have been subtracted by not a single, uniform value, but instead by the result of a distortion map (taken from a normal map). The values are then applied to the UVs, and these distorted UVs will sample the texture with more or less strength.
+In this example, My UVs have been subtracted by not a single, uniform value, but instead by the result of a distortion map. The values are then applied to the UVs, and these distorted UVs will sample the texture with more or less strength.
 
-![GIF showing the strength of the deformation]() 
+![GIF showing the strength of the deformation](img/uv-deform-intensity.gif) 
 
 Finally, a common use case for deformation, is to scroll the deformation map, and apply it to the UVs. It will make the deformation animated. You can also scroll the UVs for both the Deformation Map and the Color map at different speeds to create some parallax effect.
 
+![GIF Showing the panner + deformed UVs](img/uv-deform-panner.gif)
+
+### Authoring Deformation Maps
+
+In the examples above, the Deformation Map was authored using specific generation software to be already in the [-1.. 1] range. Such software like [Mixture for Unity](https://github.com/alelievr/Mixture/) , can help you author these maps for your projects. However, you can also author these textures from simple Normal Maps. 
+
+Normal maps are usually encoded in the [0..1] range as **unsigned-normalized** (which means that the neutral value is the 127 gray). However, if you need to use these maps as deformers, please make sure you read them correctly, using a texture node that samples the normal map correctly, or remap the value from the [0...1] range to the [-1...1] range by yourself.
+
+![Deform using Normal Maps](img/uv-deform-normalmap.png)
+
+Regardless of the input texture type, the deformation maps need to be imported as **linear (non-sRGB)** in all cases.
+
 ### Deformation Continued : Flow Mapping
 
-Now that we know how to perform UV deformation, let's go back at our question: *Can I scroll infinitely every pixel in any direction?*
+Now that we know how to perform UV deformation, let's go back at our previous question: *Can I scroll infinitely every pixel in any direction?*
 
-The simple answer is : Yes! .... but not so easy!
+The simple answer is : *Yes! .... but not so easy!*
 
-If we go back to our previous example, when we apply the deformation intensity to the deformation map, the intensity acts as our initial "time", and the pixels of the texture act as our initial "direction".
+If we go back to our previous example, when we apply the deformation intensity to the deformation map, the intensity acts as our initial "time", and the pixels of the texture act as our initial "direction". For the purpose of that example, We will use a hand painted deformation map in all directions.
 
 ![GIF Showing time plugged for deformation]()
 
@@ -65,7 +85,7 @@ Now, instead of running our time value between 0 and infinity, let's cycle it be
 
 Now, the deformation is way better, we get inverse deformation when time is at -1, no deformation at 0 then forward deformation at 1. But the problem is now that it **does not cycle**.
 
-#### Making it loop
+#### Making the flow loop
 
 The flow mapping workflow involves a process where two sequences of deformation ranges [-1 .. 1] are blended and alternate so the gap in the cycle becomes hidden. To do so, we offset the time by half a period so when the first sequence is at -1 (or 1), the other is at 0. Then we lerp between the two sequences to hide the gap. 
 
@@ -118,9 +138,16 @@ float4 SampleFlowMap(
 }
 ```
 
+#### Authoring Flowmap Textures
 
+Authoring flowmaps can be done using a wide variety of tools today. However, these tools are either old, unmaintained, or lacking functionality. 
 
+![](img/flowmap-painter.gif)
 
+* [Flowmap Painter](http://teckartist.com/?page_id=107) : Historically the standalone free tool widely used by early adopter artists. Quite simple and rudimentary, with only few options but a really good preview. Not updated since 2012.
+* [**Substance Painter** Plugin](https://substance3d.adobe.com/documentation/spdoc/flow-map-painting-143327274.html) : Integrated to substance workflow, can benefit from other masks.
+* [Flowmap Painter for **Blender**](https://www.blendernation.com/2021/03/03/free-flow-map-painter-addon/) : Does the minimum (flow painting), can do some preview but not out-of-the-box.
+* [**Krita** flow brush](https://docs.krita.org/en/reference_manual/brushes/brush_settings/options.html) : Rudimentary options, but built-in to the free painting tool. A pain to set up as there are no out-of-the-box brush preset. Lacks preview.
 
 ## UV to Gradient Color Mapping
 
@@ -157,6 +184,3 @@ float4 finalColor = tex2DLOD(_GradientMap, float4(temperature,0,0,0)).rgba;
 | Pros                                                         | Cons                                                         |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | - Unified Color mapping enables consistent colors for fire all across the game.<br />-  Fire Color fades more accurately compared to an already mapped flame.<br />- Enables the use of a single temperature map through multiple lookup tables. | - Use of a Lookup table Induces a texture dependency and degrade performance in some cases.<br /><br />-Requires a custom shader to enable the feature.<br />-Range is limited to the extents of the texture. HDR needs a separate scale channel (divider) or the use of FP16/FP32 textures. |
-
-
-## 
