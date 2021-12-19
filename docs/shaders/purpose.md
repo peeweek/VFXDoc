@@ -16,7 +16,7 @@ Shaders enable a lot of possibilities by using different paradigms that can be r
 
 #### Master Shaders
 
-RME master shader
+![](img/master-shader.png)
 
 Shaders are mainly used in a game engine artist pipeline to establish a model for all rendering by making generic templates for artists. Unity provides a standard, generic-purpose shader while unreal lets the user make its own template for the project, using a material graph. Nowadays, Unity tends to follow this same paradigm, to ensure production needs are fulfilled.
 

@@ -73,44 +73,72 @@ Now that we know how to perform UV deformation, let's go back at our previous qu
 
 The simple answer is : *Yes! .... but not so easy!*
 
+<img src="img/flowmap-handpainted.png" style="zoom:50%;" />
+
 If we go back to our previous example, when we apply the deformation intensity to the deformation map, the intensity acts as our initial "time", and the pixels of the texture act as our initial "direction". For the purpose of that example, We will use a hand painted deformation map in all directions.
 
-![GIF Showing time plugged for deformation]()
+![Using Fake time as intensity](img/flowmap-as-time.gif)
 
-Here, we used the time variable instead of a parameter, the deformation will start at zero, then grow infinitely.... and after a quick value, it becomes so stretched that it becomes unusable. But something that was interesting was the beginning of the movement, when it was *not so deformed*.
+Here, we used a slider to simulate time, the deformation will start at zero, then grow infinitely.... and after a quick value (around 0.4), it becomes so stretched that it becomes unusable, and we can even see inverse deformation. But something that was interesting was the beginning of the movement, when it was *not so deformed*, around 0.0 to 0.4.
 
-Now, instead of running our time value between 0 and infinity, let's cycle it between -1 ad 1. To do so, we modulo the time by 2, creating cycles between 0 and 2, then we subtract 1 to change the range to [-1..1]
+Now, instead of running our time value between 0 and infinity, let's cycle it between -0.5 and 0.5. To do so, we are gonna change the range of the slider from [0 .. 2], to [-0.5 .. 0.5]
 
-![GIF Showing time cycled between -1 and 1]()
+![ Showing time cycled between -0.5 and 0.5](img/flowmap-as-time-02.gif)
 
-Now, the deformation is way better, we get inverse deformation when time is at -1, no deformation at 0 then forward deformation at 1. But the problem is now that it **does not cycle**.
+Now, the deformation is way better, we get inverse deformation when time is at -0.5, no deformation at 0 then forward deformation at 0.5. But the problem is now that it **does not cycle**.
 
 #### Making the flow loop
 
-The flow mapping workflow involves a process where two sequences of deformation ranges [-1 .. 1] are blended and alternate so the gap in the cycle becomes hidden. To do so, we offset the time by half a period so when the first sequence is at -1 (or 1), the other is at 0. Then we lerp between the two sequences to hide the gap. 
+The flow mapping workflow involves a process where two sequences of deformation ranges [-0.5 .. 0.5] are blended and alternate along time, **so the gap in the cycle becomes hidden when we shot the other sequence**. 
 
-![TimelineFigure showing the two sequences]()
+To do so, we offset the time of the second sequence by *half a period* : when the first sequence is at -0.5 (or 0.5), the other is at 0. Then, we blend between the two sequences to hide the gap (green line). 
 
-When applied to our graph, it doubles the sampling of the color map (but not the deformation map), which makes it a bit more complex.
+![Figure showing the two sequences](img/flowmap-sequence-loop.png)
 
-![Screenshot of the graph]()
+When applied to our graph, it looks like this:
 
-In that graph, we have at the two the two sequences, cycled in the -1...1 range, but the second one is offset of 1s just before remapping. So the texture is sampled two times for each sequence.
+![Screenshot of the graph](img/flowmap-graph-full.png)
 
-Also, we used a triangle wave function to interpolate between the two sequences, it has a period of two, so it alternates every second from A to B, then B to A. For convenience in the master graph, we used an utility node. Here are the contents of that function. 
+**Let's break this down a little:**
 
-![Screenshot of the Triangle Wave function]()
+In that big graph, we first compute the time for each sequence, cycled in the [-0.5...0.5] range (`fraction` loops into the [0..1] range, then subtract remaps loops to [-0.5 to 0.5]. In order to offset the sequence B, we just apply a -0.5 value to the time **before** computing the cycle.
 
-Finally, we get this infinite scrolling effect. And by adjusting the intensity of the flow, we can tweak how it affects the temporal tiling. In order to enlighten the alternating two sequences, the example on the right uses two different color maps.
+![](img/flowmap-graph-time.png)
 
-> **Can I tweak the speed of blending between the two sequences? The intensity of the flow?** 
+Using this cycling time, we can now sample deformed color (just like we did in the beginning), but this time using the looped time instead of the slider. 
+
+Here's what it looks only for sequence A:
+
+![](img/flowmap-graph-sample.png)
+
+When used to sample Sequences A and B, we can see that we have both deformations alternating, each with its gap offset in time. At that point, we just need to do the blend between these two flow sequences.
+
+![](img/flowmap-graph-alternate.gif)
+
+To do so, we can blend between the two sequences using a lerp, to hide the gap in sequence A by showing the Sequence B in the meantime, and vice versa. In order to alternate between the two sequences we use an alternating blend factor.
+
+![](img/flowmap-graph-blend.gif)
+
+In order to compute the blend factor, we used a **triangle wave function** to interpolate between the two sequences, it has a period of two, so it alternates every second from A to B, then B to A. For convenience in the master graph, we used an utility node. Here are the contents of that function. 
+
+![Triangle Wave function](img/triangle-wave.gif)
+
+Finally, we get this infinite scrolling effect. And by adjusting the intensity of the flow, we can tweak how it affects the temporal tiling,
+
+As an addition: In order to enlighten the alternating two sequences, the example below shows each sequence with a different tint for color maps.
+
+![](img/flowmap-graph-blend-twocolor.gif)
+
+
+
+> **Question: Can I tweak the speed of blending between the two sequences? The intensity of the flow?** 
 >
-> Absolutely! For simplicity convenience, this example was made in the -1...1 range. But the flow mapping can be tweaked in two ways:
+> Absolutely! For simplicity convenience, this example was made in the -0.5...0.5] range. But the flow mapping can be tweaked in two ways:
 >
 > 1) By dividing input time value by the period you want to use to blend between the two sequences.
 > 2) By applying an intensity multiplier to the values you read from the deformation map.
 
-> **How to simplify this graph? ** 
+> **Question : How to simplify this graph? ** 
 >
 > As flow mapping can be a bit complex to handle. It is often recommended to either do a HLSL custom node function or a sub-graph node to simplify the workflow.
 
