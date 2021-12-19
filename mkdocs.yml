@@ -17,7 +17,7 @@ nav:
         - 'Texture Formats': 'textures/formats.md'
         - 'Flipbooks and Texture Sheets': 'textures/flipbooks.md'
         - 'Sampling Textures': 'textures/sampling.md'
-    - Shaders : 'shaders/index.md'
+    - Shaders : 
         - 'Shaders Home': 'shaders/index.md'
         - 'Purpose and Use Cases': 'shaders/purpose.md'
         - 'Color in Shaders': 'shaders/color.md'

@@ -1,5 +1,5 @@
 # VFXDoc
-Visual Effects Documentation website repository (https://vfxdoc.rtfd.io).
+[Visual Effects Documentation website repository](https://vfxdoc.rtfd.io)
 
 ## License
 

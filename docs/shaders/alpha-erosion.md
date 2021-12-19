@@ -47,9 +47,27 @@ In addition to the `step(threshold, alpha)` function exists a `smoothstep(min, m
 
 ![](img/erosion-smoothstep.gif)
 
+### Correct Threshold for Soft Erosion
+
+One of the major problems for Soft erosion is that the erosion factor values at 0.0 and 1.0 will not erode entirely the mask. This is mostly visible for the value of 1.0 in the example below. However, for a feather value of 0, this doesn't happen. 
+
+![](img/erosion-problem.gif)
+
+The problem here is that the actual range required for full black and full white is not anymore `[0.0 .. 1.0]`, but larger. And the larger the feather is, the larger the input range must be.
+
+The actual range required to work is : `[(0.0 - feather) ... (1.0 + feather)]`
+
+In order to set it up, we can modify the graph so it looks like this:
+
+![](img/erosion-problem-solved.gif)
+
+
+
 ## Authoring and Importing Erosion Maps
 
-Erosion maps are textures that convey a mathematical progress of alpha erosion. As such, they do not behave like color, and need to be imported as linear (sRGB off). Failing to do so can result in a non-linear progression of the mask, as shown as below.
+Erosion maps are textures that convey a mathematical progress of alpha erosion. As such, they do not behave like color, and **need to be imported as linear (sRGB off)**. Failing to do so can result in a non-linear progression of the erosion, as shown in the example below: 
+
+![](img/erosion-srgb.gif)
 
 
 
@@ -69,9 +87,4 @@ In the following example, the Dither Node modifies the input gradient (in the 0.
 
 <video loop="true" autoplay="true" ><source  src="../img/erosion-dithering-svex.mp4" type='video/mp4' /></video>
 
-### Correct Threshold for Soft Erosion
-
-### 
-
-### Progression Maps
 
