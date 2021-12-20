@@ -1,4 +1,4 @@
-# Texture Coordinates (UVs) in Shaders
+# Manipulating Texture Coordinates (UVs)
 
 ## Sampling textures using coordinates
 

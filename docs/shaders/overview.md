@@ -1,4 +1,4 @@
-# Shaders Overview
+# Shaders : Technical Overview
 
 In this section, we will cover the theory behind rendering a 3d object using Shaders in our game engine. This article is not specific to any game engine, some times it will have more optimized ways to render your objects, but this is the common case that is covered here.
 

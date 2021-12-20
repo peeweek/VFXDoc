@@ -97,7 +97,7 @@ Mip issues are likely to happen if **any** of the following conditions is not me
 
 While it is advised to abide by these two rules at all times, you can bend the rules a little if you assume that some artifacts can occur.
 
-### Pipeline Solutions
+## Workflow Software Solutions
 
 #### AfterEffects + Photoshop/XnView
 
