@@ -67,15 +67,19 @@ When used in color, it has an effect of altering the hardness of a linear gradie
 
 ![](img/power-func.gif)
 
-Here is an example graph with different exponents (0.5, 1, 2, 3) applied to a linear gradient.
+Here is now, how it applies to color using the same exponent coefficients: we can see that it affects the color  in a non-uniform way. In our example, the darker the color will be, the more it will be affected by the exponent.
 
-![](/img/graph-power.PNG)
+In the graph above, it is visible as the green curve will always have f(1) = 1 (the curves cross at (1,1)). However in our graph below, it only displays the [0..1] range.
+
+![](/img/exponent-gradient.gif)
+
+One of the purposes of an exponent, applied to color, in a [0..1] range is **to manipulate the attenuation** of the darker tones. 
 
 ### Sine and Cosine
 
 Sine and cosine are operations used for a various range of purposes : 
 
-* Computing coordinates based on an angle
+* Computing coordinates based on an angle, such as [rotator](shaders/texcoord.md#rotating-uvs-rotator).
 * Performing Repeating interpolation back and forth from a value A to a value B, with dampening at source/target.
 
 Sine and cosine are basically used to compute a position on an **unit circle** based on an angle on this circle.
@@ -93,8 +97,6 @@ Square mask is a combination of linear gradients multiplied together, that will 
 ##### Sphere Mask
 
 Sphere mask results in a 2D or 3D radial gradient that will correspond to a gradient based on a 2d or 3d distance to a point.
-
-
 
 ### Tri-Projection
 
