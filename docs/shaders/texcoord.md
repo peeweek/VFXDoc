@@ -1,4 +1,6 @@
-# Texture Coordinates
+# Texture Coordinates (UVs) in Shaders
+
+## Sampling textures using coordinates
 
 Reading a texture to display it in a Shader is called **Sampling** : It requires a texture to read, and **Texture Coordinates**, often called UVs to read them and position them at the correct position.
 
@@ -35,7 +37,70 @@ A pretty handy use case of manipulating the UVs before reading the texture is th
 
 
 
-## Texture Coordinate Deformation
+## Rotating UVs
+
+Rotating UVs can be useful to apply simple movement to non-moving geometry, for instance making in-place markers in your game so the player see a target position in a game level.
+
+![](img/rotator-purpose.gif)
+
+The [math behind such a transformation](https://gist.github.com/ayamflow/c06bc0c8a64f985dd431bd0ac5b557cd) of texture coordinates are however not as trivial, as they involve sine/cosine transformations. Most of the time, game engines provide an implementation for 2D rotations of coordinates. However, if you find this missing here's the HLSL code (retranscribed from the snipped from ayamflow) :
+
+```c
+float2 rotateUV(float2 uv, float rotation, float2 center)
+{
+    float2 delta = uv - center;
+    
+    return float2(
+      cos(rotation) * delta.x + sin(rotation) * delta.y + center.x,
+      cos(rotation) * delta.y - sin(rotation) * delta.x + center.y
+    );
+}
+```
+
+
+
+Implementing this function in a shadergraph produces quite a messy, yet working graph. Anyway, we can still package this transformation graph into a subgraph to simplify its use.
+
+![](img/rotator-shadergraph.gif)
+
+ 
+
+## Transforming UVs : Rectangular to Radial
+
+Sometimes, we want to deform our texture sampling to make effects such as vortices or radial effects. However, using a simple rotation of the UVs it is not enough if we want to have scrolling that goes pushes outwards, such as the example below.
+
+![](img/uv-radial-scroll.gif)
+
+In order to achieve that, we are going to convert the rectangular UV space to a **Radial UV Space**.
+
+<u>The transformation of UVs happens in a radial coordinate space:</u>
+
+* **Circular Coordinate (U)** : a coordinates that revolves around a central point. It is computed using an arc-tangent2 function (which is equivalent to `atan(y/x)`) It produces the angle around the point where the current point coordinate is. It is expressed in radians in the range [-π ... π] in order to use it as a more user-friendly coordinate, we remap the range to [0..1]
+* **Radial Coordinate (V)** : a coordinates that represents the distance to a central point.
+
+![](img/uv-rectangular-to-radial.png)
+
+### Animated Radial Scrolling / Rotation
+
+By converting traditional UV space into Radial Space, textures can be panned and rotated into that space to create both rotation, and radial scrolling:
+
+- **Rotation** will happen when applying panning to the the **transformed U coordinate**
+- Radial scrolling will happen when applying panning to the **transformed V coordinate** 
+
+![](img/uv-radial-scroll-various.gif)
+
+### Spirals and Twirls
+
+By extension, the coordinates can be modified to apply a rotation angle that increases based on the distance to the center. 
+
+* U Coordinate stays the same
+* We add the Distance (U coordinate) to the Angle (V Coordinate). Intensity is controlled by multiplying the distance by a scale : Please note that in order to conserve texture tiling, we need to apply integer scales only.
+
+![](img/uv-radial-spiral.png)
+
+
+
+## Deformation
 
 A common, more sophisticated effect involves adding the result of a deforming texture to the texture coordinates before reading the final texture. It is called Texture Coordinate Deformation (or UV Deformation).
 
