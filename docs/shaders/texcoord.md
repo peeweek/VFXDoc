@@ -37,7 +37,7 @@ A pretty handy use case of manipulating the UVs before reading the texture is th
 
 
 
-## Rotating UVs
+## Rotating UVs (Rotator)
 
 Rotating UVs can be useful to apply simple movement to non-moving geometry, for instance making in-place markers in your game so the player see a target position in a game level.
 
@@ -65,7 +65,7 @@ Implementing this function in a shadergraph produces quite a messy, yet working 
 
  
 
-## Transforming UVs : Rectangular to Radial
+## Rectangular to Radial UV
 
 Sometimes, we want to deform our texture sampling to make effects such as vortices or radial effects. However, using a simple rotation of the UVs it is not enough if we want to have scrolling that goes pushes outwards, such as the example below.
 
@@ -80,7 +80,7 @@ In order to achieve that, we are going to convert the rectangular UV space to a 
 
 ![](img/uv-rectangular-to-radial.png)
 
-### Animated Radial Scrolling / Rotation
+#### Animated Radial Scrolling / Rotation
 
 By converting traditional UV space into Radial Space, textures can be panned and rotated into that space to create both rotation, and radial scrolling:
 
@@ -89,7 +89,7 @@ By converting traditional UV space into Radial Space, textures can be panned and
 
 ![](img/uv-radial-scroll-various.gif)
 
-### Spirals and Twirls
+#### Spirals and Twirls
 
 By extension, the coordinates can be modified to apply a rotation angle that increases based on the distance to the center. 
 
@@ -100,7 +100,7 @@ By extension, the coordinates can be modified to apply a rotation angle that inc
 
 
 
-## Deformation
+## UV Deformation
 
 A common, more sophisticated effect involves adding the result of a deforming texture to the texture coordinates before reading the final texture. It is called Texture Coordinate Deformation (or UV Deformation).
 
@@ -132,29 +132,31 @@ Normal maps are usually encoded in the [0..1] range as **unsigned-normalized** (
 
 Regardless of the input texture type, the deformation maps need to be imported as **linear (non-sRGB)** in all cases.
 
-### Deformation Continued : Flow Mapping
+## Flow Mapping
 
-Now that we know how to perform UV deformation, let's go back at our previous question: *Can I scroll infinitely every pixel in any direction?*
+Following our previous example: Now that we know how to perform UV deformation, let's go back at our initial question: *Can I scroll infinitely every pixel in any direction?*
 
-The simple answer is : *Yes! .... but not so easy!*
+The simple answer is : *Yes! .... but not that easy!*
+
+For our use case, here is a deformation map that defines 8 flows going outwards, and a twirl at its center.
 
 <img src="img/flowmap-handpainted.png" style="zoom:50%;" />
 
-If we go back to our previous example, when we apply the deformation intensity to the deformation map, the intensity acts as our initial "time", and the pixels of the texture act as our initial "direction". For the purpose of that example, We will use a hand painted deformation map in all directions.
+If we look back to our previous example, when we applied the deformation intensity to the deformation map, the intensity acted as our initial "time", and the pixels of the texture acted as our initial "direction". Now, let's use our hand painted map.
 
 ![Using Fake time as intensity](img/flowmap-as-time.gif)
 
-Here, we used a slider to simulate time, the deformation will start at zero, then grow infinitely.... and after a quick value (around 0.4), it becomes so stretched that it becomes unusable, and we can even see inverse deformation. But something that was interesting was the beginning of the movement, when it was *not so deformed*, around 0.0 to 0.4.
+In this example, we used a slider to simulate time, the deformation will start at zero, then grow infinitely.... and after a quick value (around 0.4), it becomes so stretched that the flow becomes hard to read (and we can even see inverse flow deformation). But, the interesting part of the animation was the beginning of the movement, when it was *not so deformed*, around 0.0 to 0.4.
 
 Now, instead of running our time value between 0 and infinity, let's cycle it between -0.5 and 0.5. To do so, we are gonna change the range of the slider from [0 .. 2], to [-0.5 .. 0.5]
 
 ![ Showing time cycled between -0.5 and 0.5](img/flowmap-as-time-02.gif)
 
-Now, the deformation is way better, we get inverse deformation when time is at -0.5, no deformation at 0 then forward deformation at 0.5. But the problem is now that it **does not cycle**.
+This time, the deformation is way better, we get inverse deformation when time is at -0.5, no deformation at 0 then forward deformation at 0.5. We have good continuity of flow, but now the problem is that it **does not cycle**.
 
 #### Making the flow loop
 
-The flow mapping workflow involves a process where two sequences of deformation ranges [-0.5 .. 0.5] are blended and alternate along time, **so the gap in the cycle becomes hidden when we shot the other sequence**. 
+The flow mapping workflow involves a process where two sequences of deformation ranges [-0.5 .. 0.5] are blended and alternate along time, **so the gap in the cycle of one sequence becomes hidden when we show the other sequence**. 
 
 To do so, we offset the time of the second sequence by *half a period* : when the first sequence is at -0.5 (or 0.5), the other is at 0. Then, we blend between the two sequences to hide the gap (green line). 
 
@@ -180,19 +182,19 @@ When used to sample Sequences A and B, we can see that we have both deformations
 
 ![](img/flowmap-graph-alternate.gif)
 
-To do so, we can blend between the two sequences using a lerp, to hide the gap in sequence A by showing the Sequence B in the meantime, and vice versa. In order to alternate between the two sequences we use an alternating blend factor.
+To do so, we can blend between the two sequences using a lerp, to hide the gap in sequence A by showing the Sequence B in the meantime, and vice versa. In order to alternate between the two sequences we use an **alternating blend factor**.
 
 ![](img/flowmap-graph-blend.gif)
 
-In order to compute the blend factor, we used a **triangle wave function** to interpolate between the two sequences, it has a period of two, so it alternates every second from A to B, then B to A. For convenience in the master graph, we used an utility node. Here are the contents of that function. 
+Finally, by applying this blend factor, we obtain this infinite scrolling effect : In order to compute the blend factor, we used a **triangle wave function** to interpolate between the two sequences, it has a period of two, so it alternates every second from A to B, then B to A. 
 
-![Triangle Wave function](img/triangle-wave.gif)
-
-Finally, we get this infinite scrolling effect. And by adjusting the intensity of the flow, we can tweak how it affects the temporal tiling,
-
-As an addition: In order to enlighten the alternating two sequences, the example below shows each sequence with a different tint for color maps.
+<u>To enlighten a bit more how it works :</u> the example below shows each sequence with a different tint for color maps.
 
 ![](img/flowmap-graph-blend-twocolor.gif)
+
+For convenience in the master graph, we used an utility subgraph node for the triangle wave. Here are the contents of that function. (Please note that there is also a triangle wave node built-in with Shadergraph, but it outputs in the -1..1  range)
+
+![Triangle Wave function](img/triangle-wave.gif)
 
 
 
@@ -242,7 +244,7 @@ Authoring flowmaps can be done using a wide variety of tools today. However, the
 * [Flowmap Painter for **Blender**](https://www.blendernation.com/2021/03/03/free-flow-map-painter-addon/) : Does the minimum (flow painting), can do some preview but not out-of-the-box.
 * [**Krita** flow brush](https://docs.krita.org/en/reference_manual/brushes/brush_settings/options.html) : Rudimentary options, but built-in to the free painting tool. A pain to set up as there are no out-of-the-box brush preset. Lacks preview.
 
-## UV to Gradient Color Mapping
+## Gradient Mapping
 
 Color mapping is the use of a grayscale texture as coordinates to read inside a gradient texture. Basically to a black to white gradient we correspond a more complex gradient.
 
