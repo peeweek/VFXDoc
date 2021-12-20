@@ -140,7 +140,7 @@ The simple answer is : *Yes! .... but not that easy!*
 
 For our use case, here is a deformation map that defines 8 flows going outwards, and a twirl at its center.
 
-<img src="img/flowmap-handpainted.png" style="zoom:50%;" />
+![](img\flowmap-handpainted.png)
 
 If we look back to our previous example, when we applied the deformation intensity to the deformation map, the intensity acted as our initial "time", and the pixels of the texture acted as our initial "direction". Now, let's use our hand painted map.
 
