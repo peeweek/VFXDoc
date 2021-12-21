@@ -71,7 +71,7 @@ Here is now, how it applies to color using the same exponent coefficients: we ca
 
 In the graph above, it is visible as the green curve will always have f(1) = 1 (the curves cross at (1,1)). However in our graph below, it only displays the [0..1] range.
 
-![](/img/exponent-gradient.gif)
+![](img/exponent-gradient.gif)
 
 One of the purposes of an exponent, applied to color, in a [0..1] range is **to manipulate the attenuation** of the darker tones. 
 
