@@ -8,7 +8,7 @@ A Series of code snippets for use in your shaders.
 
 ```c
 float Saw01(float x) {
-	return abs(2*frac(abs(x))-1);
+	return frac(x);
 }
 ```
 
@@ -16,7 +16,7 @@ float Saw01(float x) {
 
 ```c
 float Saw(float x) {
-	return 2*(abs(2*frac(abs(x))-1)-0.5);
+	return 2*frac(x)-1;
 }
 ```
 
@@ -24,7 +24,7 @@ float Saw(float x) {
 
 ```c
 float Square01(float x) {
-	return ceil(frac(x)-0.5f);
+	return floor((2*x)%2);
 }
 ```
 
@@ -32,7 +32,23 @@ float Square01(float x) {
 
 ```c
 float Square(float x) {
-	return 2*(ceil(frac(x)-0.5f))-0.5;
+	return 2*floor((2*x)%2)-1;
+}
+```
+
+##### Triangle Wave (0..1)
+
+```c
+float Triangle01(float x) {
+	return abs(((2*x)%2)-1);
+}
+```
+
+##### Square Function (-1..1)
+
+```c
+float Triangle(float x) {
+	return 2*abs((2*x)%2-1)-1;
 }
 ```
 
@@ -58,10 +74,6 @@ float3 Rotate(float3 pivot, float3 position, float3 rotationAxis, float angle)
 }
 ```
 
-
-
-
-
 ## Color
 
 ##### Desaturate
@@ -75,8 +87,6 @@ float Desaturate(float3 Color)
 }
 
 ````
-
-
 
 ## Texture Sampling
 
@@ -93,8 +103,6 @@ float4 TriplanarProjection(sampler2D Texture, float3 WorldPixelRatio, float3 Wor
 
 }
 ```
-
-
 
 ## Texture Coordinate Utilities
 

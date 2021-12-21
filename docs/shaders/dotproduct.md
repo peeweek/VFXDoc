@@ -1,12 +1,10 @@
 # Dot Product
 
-Dot product (a.k.a Scalar Product) is a pretty common math algebraic operation used in trigonometry that helps solving many cases. It works by comparing two vectors of any length and **returns a value based on their length and the angle they are forming.**
-
-
+Dot product (also known as *Scalar Product*) is a pretty common math algebraic operation used in trigonometry that helps solving many cases. It works by comparing two vectors of any length and **returns a value based on their length and the angle they are forming.**
 
 ## Principles
 
-### Behaviors
+### Behavior
 
 ![](img/angle-vectors.png)
 
@@ -91,15 +89,51 @@ sqr_radius_sum = dot(OA,OA) + dot(QB,QB)
 
 Then, we just need to compare these two squared distances.
 
-### UV/3D Distance Gradients
+## Practical Examples
+
+Dot product theory can be a bit vague, even with its use cases : Here are some practical examples that make use of the dot product.
+
+### SphereMask Distance Gradients
+
+These simple masks can help generate procedural, (infinitely precise) masks that can be used for glow sprites. The Radial gradient can be altered using an [exponent](math.md#power-exponent) to control the attenuation of the outer part of the gradient.
+
+![](img/uv-spheremask.png)
 
 ### Fresnel and Inverse-Fresnel
 
+![](img/fresnel.png)
+
 ### World-Space oriented coverage
 
-### Projection of a point on an Axis (Closest point to the axis)
+Another use case of dot products is to generate masks that are computed from a particular point of view in the scene. For example a coverage mask for snow, based on the normals of the objects, and a vertical projection axis.
 
-### Box Projection
+![](img/ws-oriented-coverage-snow.gif)
+
+For that example, we used a simple master shader based on Albedo, Normal Map, and Roughness. The shader blends between the rock properties (from the input textures, and the snow properties (color and roughness as constants, and the normal being a flattened version of the rock normals).
+
+![](img/ws-oriented-coverage-master.png)
+
+In order to compute the snow mask, we first **sample the normals of the object** and we blend them towards a flat normal to diminish the influence of the high frequency normals of the rock (using a `Texture2DBias Sample` could also help as it would use a more blurred mip of the normal map). Once sampled and flattened, the normals are transformed from tangent (texture) space, to world space. 
+
+Then, we perform the **dot product** between the **world-space normals,** and the **World-Up Vector** (in our case, it was Y-up as we are in unity).
+
+The result of this operation is determining *How much the normals are facing upwards* : our **colinearity coefficient** with the up vector.
+
+Then, we performed a threshold (Step) on that value, in order to generate the mask : 1.0 (snow) for values above the threshold, and 0.0 (rock) for values below.
+
+![](img/ws-oriented-coverage-mask.png)
+
+Finally, the mask is used in various lerp operations to perform the blending on Color, Normals and Roughness* 
+
+**in our case it was smoothness (inverse roughness)*
+
+![](img/ws-oriented-coverage-blend.png)
+
+
+
+
+
+
 
 
 
