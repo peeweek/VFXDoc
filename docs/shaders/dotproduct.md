@@ -12,12 +12,15 @@ The dot product compares two vectors based on their **length** and the **angle**
 
 ![](img/angles-colinear.png)
 
-1. When the two vectors AB and AC are **normalized** (length = 1): Returns the **co-linearity coefficient**: which means how much the two vectors are parallel and in the same direction:
-   - 1.0 if they are **equal**
+1. When the two vectors AB and AC are **normalized** (length = 1): Returns the **cosine** of the angle they form: it can be assumed as a **co-linearity coefficient** that defines how much the two vectors are **parallel** and **in the same direction**. 
+   
+   <u>Typical values are:</u>
+   
+   - 1.0 if they are **equal** (parallel, same direction, 0 degree angle)
    - 0.0 if they are **perpendicular** (90 degrees)
-   - -1.0 if they are **opposed** (exact opposite directions, 180 degree angle)
-
-   > Values are interpolated based on the angle and are equal to the **cosine of the angle formed by these two vectors.**
+   - -1.0 if they are **opposed** (parallel in opposite directions, 180 degree angle)
+   
+   > Values are interpolated based on the angle but **not linearly** : as the result is equal to the **cosine of the angle formed by these two vectors**, it follows a (co)sine wave interpolation
    
    
    
@@ -95,7 +98,7 @@ Dot product theory can be a bit vague, even with its use cases : Here are some p
 
 ### SphereMask Distance Gradients
 
-These simple masks can help generate procedural, (infinitely precise) masks that can be used for glow sprites. The Radial gradient can be altered using an [exponent](math.md#power-exponent) to control the attenuation of the outer part of the gradient.
+These simple masks can help generate procedural, (infinitely precise) masks that can be used for glow sprites. The Radial gradient can be altered using an [exponent](math.md#exponent-power) to control the attenuation of the outer part of the gradient.
 
 ![](img/uv-spheremask.png)
 

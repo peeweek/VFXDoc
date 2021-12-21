@@ -37,7 +37,7 @@ Some Facts:
 
 ### Fractional Part (Frac) and Modulo
 
-Fractional part removes then integer part of a number and leaves us only with its fraction of 1. It is roughly the same as a Modulo of 1. 
+Fractional part removes then integer part of a number and leaves us only with its fraction of 1. It is roughly the same as a Modulo 1. 
 
 ![Fractional Part of X, in green](img/frac-func.PNG)
 
@@ -49,7 +49,7 @@ One common use case is to make perdiodic repetition over time, frac or modulo ca
 
 ![Floor Part of X, in green](img/floor-func.PNG)
 
-### Power Exponent
+### Exponent (Power)
 
 The power operation (A exponent n) is an operation that will multiply a value A, N times by itself. A exponent 3 will result in A x A x A.
 
