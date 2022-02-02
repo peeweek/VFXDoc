@@ -1,8 +1,10 @@
 # Manipulating Texture Coordinates (UVs)
 
+This page presents a variety of practices related to displaying textures in various flavors using shaders. While this list is not exhaustive, you will find here many features that you can even combine together, for instance you can use a **Panner** on a **Deformation Map** to distort another texture, then use **Gradient Mapping** to output its color. See Final Section (Example) for a more complex production example.
+
 ## Sampling textures using coordinates
 
-Reading a texture to display it in a Shader is called **Sampling** : It requires a texture to read, and **Texture Coordinates**, often called UVs to read them and position them at the correct position.
+Firstly, let's look at reading a texture to display it in a Shader. This method is called **Sampling** : It requires a texture to read, and **Texture Coordinates**, often called UVs to read them and display each texel at the correct position either on mesh (using mesh UVs) or on screen.
 
 ![](./img/uv-read.png)
 
@@ -246,16 +248,52 @@ Authoring flowmaps can be done using a wide variety of tools today. However, the
 
 ## Gradient Mapping
 
-Color mapping is the use of a grayscale texture as coordinates to read inside a gradient texture. Basically to a black to white gradient we correspond a more complex gradient.
+Color mapping is the use of a grayscale texture as coordinates to read inside a gradient texture. Basically, this method maps an input black to white gradient to any gradient any more complex gradient.
 
-![](./img/gradient-map.gif)
+
+
+The easiest example is to start using UVs separate channels as input for the gradient map. The U and V (horizontal and vertical) gradients will map their values to the gradient.
+
+![](img/gradientmap-uvs.png)
+
+Similarly, we can use a Sphere Mask, that creates an inside-out radial gradient, to map the values of the gradient map.
+
+![](img/gradientmap-spheremask.png)
+
+But where the mapping is mostly used, is after reading a Grayscale Texture. In that case, a noise, that is multiplied by our sphere mask, then used as input for our gradient map.
+
+![](img/gradientmap-texture.png)
+
+
+
+The interesting part is when we apply a scale multiplier to the input gradient, **before mapping it to the gradient**: the resulting color of the gradient mapping creates an extinction effect that traverses the gradient. 
+
+In our case, the fire pixels that were white at high scale values, will extinguish and fade, not using a White > Gray > Black transition, but instead will use the gradient values to Fade through White > Yellow > Orange > Dark Red > Black, thus feeling more similar to how fire and flame fades.
+
+
+
+![gradientmap-scale](img/gradientmap-scale.gif)
+
+
 
 #### Authoring assets
 
-The method involves authoring gradient maps that are used as lookup tables. The general setup for a color-mapped process is as following:
+Authoring Gradient maps is quite straightforward, as Photoshop and Krita already implement filters to apply Gradient Mapping to a grayscale gradient.
 
-* Temperature Maps imported as grayscale and linear (non-sRGB)
-* Gradient Maps imported as sRGB with no texture wrapping (clamp outside 0..1 UV range)
+* **Photoshop** : Layer > Adjustment Layers > Gradient Map
+* **Krita** :  Filter > Map > Gradient Map
+
+![](./img/gradient-map.gif)
+
+#### Importing Gradient Maps and Gradient-map compatible grayscale textures
+
+The general setup for importiung color-mapped textures is as following:
+
+* **Temperature (Grayscale Maps intended for gradient mapping)** : must be imported as grayscale and linear (non-sRGB)
+* **Gradient Maps** should generally be imported as **sRGB** with no texture wrapping (**Clamp** outside 0..1 UV range).
+  * *Exception for HDR* : If you are able to bake HDR values into EXR gradients, these textures should be not imported as sRGB (because HDR must be stored as linear values). 
+  * *Exception for Cycling Gradients*: If you want to cycle your Gradient Map (for example using an input gradient that is not limited to the [0..1] range), you can use a different mode than clamp for texture Wrapping in the texture import options.
+
 
 #### The shader Code
 
@@ -278,4 +316,19 @@ float4 finalColor = tex2DLOD(_GradientMap, float4(temperature,0,0,0)).rgba;
 
 | Pros                                                         | Cons                                                         |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| - Unified Color mapping enables consistent colors for fire all across the game.<br />-  Fire Color fades more accurately compared to an already mapped flame.<br />- Enables the use of a single temperature map through multiple lookup tables. | - Use of a Lookup table Induces a texture dependency and degrade performance in some cases.<br /><br />-Requires a custom shader to enable the feature.<br />-Range is limited to the extents of the texture. HDR needs a separate scale channel (divider) or the use of FP16/FP32 textures. |
+| - Unified Color mapping enables consistent colors for fire all across the game.<br />-  Fire Color fades more accurately compared to an already mapped flame.<br />- Enables the use of a single temperature map through multiple lookup tables. | - Use of a Lookup table Induces a texture dependency and may degrade performance in some cases.<br /><br />-Requires a custom shader to enable the feature.<br />-Range is limited to the extents of the texture. HDR needs a separate scale channel (divider) or the use of FP16/FP32 textures. |
+
+## Complex Example #1 - Fire Particle
+
+The following example summarizes how the practices described in this page relate to each other. It is quite similar to what a particle shader could look like (except that it is not bound to particle color, and do not expose shader properties).
+
+![](img/uv-complex-example.png)
+
+<u>It combines the following:</u>
+
+1) A tiled, panning deformation noise.
+2) A panning grayscale noise, whose UVs are deformed by the deformation noise.
+3) A sphere mask, that is combined by the grayscale noise, and scaled in the range [0..10] so it can fade, or go really intense.
+4) Gradient Mapping of that resulting Masked, and Scaled Noise, to produce the final result.
+
+![](img/uv-complex-result.gif)
