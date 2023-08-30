@@ -1,6 +1,10 @@
 # High Level Shading Language
 
-This language is close to the C language, and uses a reduced instruction set dedicated to GPU computing. Depending on the engine you use, shaders file contents can vary but you will find here the common denonimator for writing hlsl.
+HLSL (standing for High Level Shading Language) is a programming language intended to write shaders. It's been introduced with DirectX 9 and has evolved until today through various versions. 
+
+This language is close to the C language, and uses a reduced instruction set dedicated to GPU computing. Depending on the engine you use, shaders file contents can vary but you will find here the common denonimator for writing HLSL.
+
+A variant of HLSL is GLSL, another shading language that was introduced to work with OpenGL. It is quite similar in syntax, but uses enough differences to be not compatible by default. Thankfully, the differences are mostly keywords, function names, so converting one another into the other is feasible.
 
 ### Text vs. Graph
 
@@ -71,7 +75,7 @@ Base declarations are in our example, arbitrary. It is not always the case but i
 
 `ps` and `vs` are arbitrary in the example and can be different from one engine to another. For example Unity uses `#pragma vertex vertexShader` with the use of `vertex` keyword to define the vertex shader, and `fragment` for a pixel shader and `surface` for its specific, high-level surface definition.
 
-So if you take a look at the end of the example you will see
+So if you take a look at the end of the example you will see :
 
 `v2p vertexShader(vertexInfo input)` and`float4 pixelShader(v2p input) : SV_TARGET`  that are declarations of the vertex and pixel shader.
 
@@ -98,21 +102,25 @@ For the `vertexInfo` structure we have 3 elements:
 * uv, vector of 2 components (U,V) passed to the TEXCOORD0 semantic, corresponding to the first UV channel.
 * color, vector of 3 components (R,G,B) passed to the COLOR semantic, corresponding to the vertex color channel.
 
-#### Semantics for a Vertex-To-Pixel data structure
+#### Vertex-To-Pixel data structure : interpolants
 
-For the case of an vertex declaration, these semantics correspond to the data contained into the mesh. But when it comes to declare a structure of data that will be used between the vertex shader and pixel shader, the semantics are not the same. In this case, we need to use the `SV_POSITION` semantic for the screen-space position (projected position of the vertex on screen), then any TEXCOORD(N) semantic for other values such as UVs or color.
+For the case of an vertex declaration, these semantics correspond to the data contained into the mesh's vertices. To have value, these need to be exported from your DCC and be imported (or generated) in your game engine. 
 
-Passing data through these semantics will tell the rasterizer that, for every pixel of the triangle, the value need to be interpolated (for example vertex color interpolated from every vertex of a triangle) 
+But when it comes to declare a structure of data that will be used between the vertex shader and pixel shader, the semantics are not the same : In our example, we need to use the `SV_POSITION` semantic for the screen-space position (projected position of the vertex on screen), then any TEXCOORD(N) semantic for other values such as UVs or color.
 
-TEXCOORD(N) is limited though so you cannot use an infinity of values passed from vertex to pixel. Every channel can contain from 1 to 4 channels (float, float2, float3 or float4).
+Passing data through a Vertex to Pixel structure will tell the rasterizer that, for every pixel of the triangle, the value need to be computed per vertex, then **interpolated** for each pixel of the triangle between the vertices (for example vertex color interpolated from every vertex of a triangle). 
+
+`TEXCOORD(N)` sematic is limited though so you cannot use an infinity of values passed from vertex to pixel. Every channel can contain from 1 to 4 channels (float, float2, float3 or float4).
 
 It is utterly interesting to use these interpolants to benefit from automatic vertex interpolation (for UVs, normals, colors, etc.)
 
-> Performance Note: you can also use the `nointerpolation` keyword before the type to specify that you do not want the values to be interpolated through the triangle. Use this case when you pass constant data computed in vertex shader that do not need interpolation, to save some bandwidth
+> Performance Note: It is possible to interfere with the interpolation if not required. You can use the `nointerpolation` keyword before the type to specify that you do not want the values to be interpolated through the triangle. Use this case when you pass constant data computed in vertex shader that do not need interpolation, to save some bandwidth.
+>
+> See the HLSL documentation for these keywords : https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-struct
 
 ## Uniforms
 
-Uniforms are the external parameters of the shader and are called uniforms because they do not vary from one vertex to another, or from one pixel to another, they are `uniform`. 
+Uniforms are the external parameters of the shader and are called uniforms because they do not vary from one vertex to another, or from one pixel to another, they are `uniform` to all the pixels and vertices of the shader, thus not tied to the geometry data.
 
 In a material system, some of these values will be exposed so the user can set them.
 
@@ -134,11 +142,11 @@ These are declared at the base level of the code, not in a function block (in th
 
 The vertex shader is the function that will take all the vertices of the mesh and will transform them to screen-space projected positions, so the rasterizer can define which pixels on screen have to be drawn for this model.
 
-In this function we do the following:
+<u>In this function we generally do the following:</u>
 
-* we transform the model vertices from local space to screen-space using the worldViewProjection matrix.
-* we transform the UV by scaling them by the UVTile scale factor, so we can tile the texture when we will read it.
-* we pass the vertex color to the pixel shader without modification
+* Transform the model vertices from local space to screen-space using the worldViewProjection matrix.
+* Pass the UV to the pixel shader, and optionally, transform these UV by scaling them by the UVTile scale factor, so we can tile single texture when we will read it. If multiple textures make use of different UV tiling, it is advised to not scale them in vertex shader, but do it instead in the pixel shader, after passing untouched UVs.
+* Pass the vertex color to the pixel shader without modification
 
 ## Pixel Shader
 

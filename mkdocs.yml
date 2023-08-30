@@ -23,6 +23,7 @@ nav:
         - 'Color in Shaders': 'shaders/color.md'
         - 'Manipulating Texture Coordinates': 'shaders/texcoord.md'
         - 'Math for Artists': 'shaders/math.md'
+        - 'Fun with Vectors': 'shaders/dotproduct.md'
         - 'Utility Functions': 'shaders/utility.md'
         - 'Shaders : Technical Overview': 'shaders/overview.md'
         - 'HLSL Example': 'shaders/hlsl.md'

@@ -1,10 +1,24 @@
-# Dot Product
+# Fun with Vectors!
+
+While making Visual Effects, it is quite common to make use of vectors, such as positions, normals, tangents, velocities, etc. These vectors can be processed in a wide variety of ways to compute masks, attenuations or even other vectors. This page summarizes some of the cool stuff we can make using vectors. 
+
+# Theory and Vector Operations
+
+## Vectors, Positions, Directions
+
+A vector is generally a representation of an element in a multi-dimensional space (2D, 3D) :
+
+- of a point, as a position in space, given its coordinates
+- of a direction in this space, for instance a wind direction
+- or the offset between two points : how much do I need to travel in straight line to go from A to B
+
+Vectors are defined as multiple component values, one for each axis of the space, X and Y for 2D space, or X,Y and Z for 3D Space, regardless of their type. We can consider that they always represent the link between a start and an end, in their space.
+
+## The Dot Product
 
 Dot product (also known as *Scalar Product*) is a pretty common math algebraic operation used in trigonometry that helps solving many cases. It works by comparing two vectors of any length and **returns a value based on their length and the angle they are forming.**
 
-## Principles
-
-### Behavior
+### How it behaves
 
 ![](img/angle-vectors.png)
 
@@ -36,7 +50,7 @@ The dot product compares two vectors based on their **length** and the **angle**
 
 The dot product operation is **Symmetric**: Meaning that A dot B equals B dot A
 
-### Formula
+### Dot product Formula
 
 The dot product of two vectors `v1` and `v2` can be computed by the following formula:
 
@@ -47,10 +61,6 @@ It can also be resolved by the following formula:
 `dot(v1,v2) = (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z)`
 
 Thus resolving the cosine of the angle without using an actual cosine, if the lengths of v1 and v2 are known.
-
-##  Use Cases
-
-Here is a more detailed section where the dot product can be useful.
 
 ### Comparing Squared Lengths/Distances
 
@@ -92,19 +102,23 @@ sqr_radius_sum = dot(OA,OA) + dot(QB,QB)
 
 Then, we just need to compare these two squared distances.
 
-## Practical Examples
+## Practical Examples with Vectors
 
 Dot product theory can be a bit vague, even with its use cases : Here are some practical examples that make use of the dot product.
 
-### SphereMask Distance Gradients
+### Sphere Mask Distance Gradients
 
 These simple masks can help generate procedural, (infinitely precise) masks that can be used for glow sprites. The Radial gradient can be altered using an [exponent](math.md#exponent-power) to control the attenuation of the outer part of the gradient.
 
 ![](img/uv-spheremask.png)
 
+These masks are mostly intended for use with particles, especially when you want to multiply them with scrolling noises to keep them rounded.
+
 ### Fresnel and Inverse-Fresnel
 
 ![](img/fresnel.png)
+
+
 
 ### World-Space oriented coverage
 
